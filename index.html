@@ -1,0 +1,3600 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Stellody: Beyond the Shield v0.1.4</title>
+  <style>
+    :root {
+      --bg: #070908;
+      --panel: #101412;
+      --panel-2: #171a16;
+      --panel-3: #1d201a;
+      --line: #43504a;
+      --line-soft: #27312d;
+      --text: #eaf0e7;
+      --muted: #98a79e;
+      --dim: #65756e;
+      --accent: #74e4c4;
+      --accent-2: #93b7ff;
+      --gold: #e4c35d;
+      --green: #9ae084;
+      --red: #ff7474;
+      --orange: #f1a661;
+      --violet: #c9a2ff;
+      --cyan: #80d8ff;
+      --black: #020403;
+      --shadow: rgba(0, 0, 0, 0.42);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        linear-gradient(rgba(116, 228, 196, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(116, 228, 196, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 18% 12%, rgba(147, 183, 255, 0.09), transparent 32%),
+        radial-gradient(circle at 82% 20%, rgba(228, 195, 93, 0.07), transparent 30%),
+        var(--bg);
+      background-size: 22px 22px, 22px 22px, auto, auto, auto;
+      color: var(--text);
+      font-family: "Noto Serif TC", "Source Han Serif TC", "Microsoft JhengHei", serif;
+      letter-spacing: 0;
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select {
+      color: inherit;
+      font: inherit;
+      letter-spacing: 0;
+      border-radius: 0;
+    }
+
+    button {
+      min-height: 34px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, #20271f, #101410);
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    button:hover:not(:disabled),
+    button.active {
+      border-color: var(--accent);
+      color: #f5fffb;
+      background: linear-gradient(180deg, #263930, #142019);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      color: var(--dim);
+      border-color: var(--line-soft);
+      background: #111411;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-height: 34px;
+      border: 1px solid var(--line);
+      background: var(--black);
+      padding: 6px 8px;
+      outline: none;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+    }
+
+    .app {
+      height: 100vh;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 8px;
+      gap: 8px;
+    }
+
+    .topbar {
+      border: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(18, 24, 21, 0.96), rgba(31, 35, 26, 0.92));
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: minmax(260px, 1fr) minmax(280px, 380px) auto;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      box-shadow: 0 12px 28px var(--shadow);
+    }
+
+    .brand {
+      min-width: 0;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(22px, 2.4vw, 34px);
+      line-height: 1.05;
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    .brand .subtitle {
+      color: var(--muted);
+      margin-top: 4px;
+      font-size: 13px;
+    }
+
+    .top-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .top-actions button {
+      padding: 5px 10px;
+    }
+
+    .route-control {
+      display: grid;
+      grid-template-columns: 74px minmax(180px, 1fr);
+      align-items: center;
+      gap: 4px 8px;
+      min-width: 0;
+      border-left: 1px solid var(--line-soft);
+      border-right: 1px solid var(--line-soft);
+      padding: 0 10px;
+    }
+
+    .route-control label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .route-control select {
+      min-width: 0;
+    }
+
+    .route-desc {
+      grid-column: 1 / -1;
+      min-height: 18px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .layout {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(280px, 320px) minmax(720px, 1fr);
+      gap: 8px;
+    }
+
+    .column {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .command-center {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: minmax(300px, 42vh) minmax(260px, 1fr);
+      gap: 8px;
+    }
+
+    .radar-row {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: minmax(210px, 1fr) minmax(300px, 380px) minmax(230px, 1.05fr);
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .radar-column {
+      min-width: 0;
+      min-height: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .panel {
+      min-height: 0;
+      border: 1px solid var(--line);
+      background: rgba(16, 20, 18, 0.94);
+      box-shadow: 0 10px 24px var(--shadow);
+    }
+
+    .panel.pad {
+      padding: 10px;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 30px;
+      margin: -10px -10px 10px;
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(116, 228, 196, 0.11), rgba(228, 195, 93, 0.08));
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    .panel-title span:last-child {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .scroll {
+      overflow: auto;
+      scrollbar-width: thin;
+      scrollbar-color: var(--line) var(--black);
+    }
+
+    .status-panel {
+      flex: 1 1 auto;
+      overflow: auto;
+    }
+
+    .level-up-alert {
+      display: none;
+      margin-top: 8px;
+      border: 1px solid var(--gold);
+      background: rgba(228, 195, 93, 0.1);
+      color: var(--gold);
+      padding: 7px;
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .level-up-alert.show {
+      display: block;
+    }
+
+    .section {
+      border-top: 1px solid var(--line-soft);
+      padding-top: 8px;
+      margin-top: 8px;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 4px 8px;
+      font-size: 14px;
+      align-items: center;
+    }
+
+    .kv .value {
+      text-align: right;
+      color: var(--gold);
+      min-width: 0;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 0;
+      font-size: 13px;
+    }
+
+    .bar {
+      position: relative;
+      height: 20px;
+      border: 1px solid var(--line);
+      background: var(--black);
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      transition: width 0.25s ease;
+    }
+
+    .bar.hp .bar-fill {
+      background: linear-gradient(90deg, #8d2222, #ff7474);
+    }
+
+    .bar.sync .bar-fill {
+      background: linear-gradient(90deg, #1e5f6b, #80d8ff);
+    }
+
+    .bar.san .bar-fill {
+      background: linear-gradient(90deg, #5d3d88, #c9a2ff);
+    }
+
+    .bar.exp .bar-fill {
+      background: linear-gradient(90deg, #7a6322, #e4c35d);
+    }
+
+    .bar-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      text-shadow: 0 1px 2px #000;
+      white-space: nowrap;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 4px;
+    }
+
+    .stat-box,
+    .resource-box,
+    .map-button,
+    .event-card,
+    .item-row,
+    .upgrade-row {
+      border: 1px solid var(--line-soft);
+      background: rgba(2, 4, 3, 0.28);
+    }
+
+    .stat-box {
+      padding: 6px;
+      min-height: 43px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .stat-label {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .stat-value {
+      color: var(--text);
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .stat-plus {
+      width: 26px;
+      min-height: 26px;
+      padding: 0;
+      font-weight: 900;
+    }
+
+    .resource-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+    }
+
+    .resource-box {
+      padding: 6px;
+      min-height: 42px;
+    }
+
+    .resource-box div:first-child {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .resource-box div:last-child {
+      color: var(--gold);
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+
+    .danger {
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .danger.blue {
+      color: var(--cyan);
+    }
+
+    .danger.purple {
+      color: var(--violet);
+    }
+
+    .danger.red {
+      color: var(--red);
+    }
+
+    .scene-panel {
+      position: relative;
+      align-self: center;
+      width: min(360px, 100%);
+      aspect-ratio: 1 / 1;
+      flex: 0 0 auto;
+      min-height: 0;
+      overflow: hidden;
+      background: #050705;
+    }
+
+    #scene {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .scene-hud {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: end;
+      pointer-events: none;
+    }
+
+    .enemy-readout {
+      border: 1px solid rgba(116, 228, 196, 0.45);
+      background: rgba(2, 4, 3, 0.76);
+      padding: 8px;
+    }
+
+    .enemy-name {
+      font-size: 18px;
+      color: var(--gold);
+      font-weight: 900;
+    }
+
+    .enemy-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .strategy-box {
+      min-width: 210px;
+      border: 1px solid rgba(228, 195, 93, 0.4);
+      background: rgba(2, 4, 3, 0.76);
+      padding: 8px;
+      pointer-events: auto;
+    }
+
+    .strategy-box label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .mid-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 8px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .mid-tabs button {
+      padding: 5px 9px;
+      min-height: 31px;
+    }
+
+    .events-body {
+      flex: 1;
+      min-height: 0;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .event-card {
+      padding: 8px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .event-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--violet);
+      font-weight: 900;
+    }
+
+    .event-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .event-options {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 5px;
+    }
+
+    .event-options button {
+      min-height: 42px;
+      padding: 4px 6px;
+      font-size: 13px;
+    }
+
+    .log-panel {
+      flex: 1 1 auto;
+      min-height: 160px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .explore-log-panel,
+    .battle-log-panel {
+      min-height: 0;
+    }
+
+    #explore-log,
+    #battle-log {
+      flex: 1;
+      min-height: 0;
+      padding: 8px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .log-line {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 3px 0;
+      color: var(--muted);
+    }
+
+    .log-line .time {
+      color: var(--dim);
+      margin-right: 6px;
+    }
+
+    .log-combat {
+      color: #ffaaa0;
+    }
+
+    .log-loot {
+      color: var(--gold);
+    }
+
+    .log-weather {
+      color: var(--cyan);
+    }
+
+    .log-event {
+      color: var(--violet);
+    }
+
+    .log-state {
+      color: #f6dc7c;
+    }
+
+    .log-system {
+      color: #c5d1cb;
+    }
+
+    .right-panel {
+      flex: 1 1 auto;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tab-buttons {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+      padding: 8px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tab-buttons button {
+      min-height: 32px;
+      padding: 4px;
+      font-size: 13px;
+    }
+
+    #tab-content {
+      flex: 1;
+      min-height: 0;
+      padding: 8px;
+    }
+
+    .item-row,
+    .upgrade-row {
+      display: grid;
+      gap: 5px;
+      padding: 8px;
+      margin-bottom: 6px;
+    }
+
+    .item-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      color: var(--text);
+      font-weight: 900;
+    }
+
+    .item-desc {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .item-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .item-actions button {
+      min-height: 30px;
+      padding: 3px 8px;
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 22px;
+      padding: 1px 6px;
+      border: 1px solid var(--line-soft);
+      color: var(--muted);
+      background: rgba(0, 0, 0, 0.24);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      border: 1px solid var(--line-soft);
+      background: rgba(0, 0, 0, 0.18);
+      padding: 8px;
+      margin-bottom: 8px;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .color-control {
+      display: grid;
+      grid-template-columns: 1fr 42px;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line-soft);
+      background: rgba(0, 0, 0, 0.18);
+      padding: 6px;
+    }
+
+    .color-control span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .color-control input {
+      width: 42px;
+      min-height: 30px;
+      padding: 2px;
+      cursor: pointer;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.72);
+      padding: 16px;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .creation {
+      width: min(880px, 100%);
+      max-height: min(92vh, 860px);
+      overflow: auto;
+      border: 1px solid var(--accent);
+      background:
+        linear-gradient(rgba(116, 228, 196, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(116, 228, 196, 0.05) 1px, transparent 1px),
+        #0b0f0c;
+      background-size: 18px 18px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.76);
+      padding: 18px;
+    }
+
+    .creation h2 {
+      margin: 0;
+      color: var(--accent);
+      font-size: clamp(26px, 4vw, 44px);
+      line-height: 1.1;
+      font-weight: 900;
+    }
+
+    .creation .lead {
+      margin: 8px 0 16px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .creation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .creation-box {
+      border: 1px solid var(--line);
+      background: rgba(0, 0, 0, 0.24);
+      padding: 10px;
+    }
+
+    .create-stat-row {
+      display: grid;
+      grid-template-columns: 1fr 44px 34px 34px;
+      align-items: center;
+      gap: 6px;
+      margin: 6px 0;
+    }
+
+    .create-stat-row strong {
+      color: var(--gold);
+      text-align: center;
+    }
+
+    .protocols {
+      display: grid;
+      gap: 6px;
+    }
+
+    .protocol {
+      padding: 8px;
+      border: 1px solid var(--line-soft);
+      background: rgba(0, 0, 0, 0.18);
+      cursor: pointer;
+    }
+
+    .protocol.active {
+      border-color: var(--accent);
+      background: rgba(116, 228, 196, 0.08);
+    }
+
+    .protocol strong {
+      display: block;
+      color: var(--text);
+    }
+
+    .protocol span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 3px;
+    }
+
+    .creation-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .creation-actions button {
+      padding: 8px 14px;
+      min-width: 140px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .text-muted {
+      color: var(--muted);
+    }
+
+    .text-gold {
+      color: var(--gold);
+    }
+
+    .text-accent {
+      color: var(--accent);
+    }
+
+    .text-red {
+      color: var(--red);
+    }
+
+    .text-violet {
+      color: var(--violet);
+    }
+
+    .empty {
+      color: var(--dim);
+      border: 1px dashed var(--line-soft);
+      padding: 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 1180px) {
+      html,
+      body {
+        overflow: auto;
+      }
+
+      .app {
+        height: auto;
+        min-height: 100vh;
+      }
+
+      .layout,
+      .topbar,
+      .command-center,
+      .radar-row,
+      .creation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .command-center {
+        grid-template-rows: auto;
+      }
+
+      .top-actions {
+        justify-content: flex-start;
+      }
+
+      .route-control {
+        border-left: 0;
+        border-right: 0;
+        padding: 0;
+      }
+
+      .scene-panel {
+        width: min(360px, 100%);
+      }
+
+      .log-panel,
+      .right-panel {
+        min-height: 280px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .app {
+        padding: 5px;
+      }
+
+      .resource-grid,
+      .stats-grid,
+      .color-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tab-buttons {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .scene-hud {
+        grid-template-columns: 1fr;
+      }
+
+      .strategy-box {
+        min-width: 0;
+      }
+
+      .creation-actions {
+        flex-direction: column;
+      }
+
+      .creation-actions button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <h1>Project Stellody: Beyond the Shield</h1>
+        <div class="subtitle">Astra Maris 外勤紀錄 / 單檔原型 v0.1.4</div>
+      </div>
+      <div class="route-control">
+        <label for="map-select">外勤地圖</label>
+        <select id="map-select"></select>
+        <div id="map-select-desc" class="route-desc">護盾外路線待選擇。</div>
+      </div>
+      <div class="top-actions">
+        <button id="btn-new">新紀錄</button>
+        <button id="btn-save">儲存</button>
+        <button id="btn-load">讀取</button>
+        <button id="btn-pause">暫停</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <aside class="column">
+        <section class="panel pad status-panel">
+          <div class="panel-title"><strong>越盾者狀態</strong><span id="ui-protocol">未啟動</span></div>
+          <div class="kv">
+            <div>姓名</div><div class="value" id="ui-name">---</div>
+            <div>等級</div><div class="value"><span id="ui-level">1</span> / <span id="ui-exp-next">60</span> EXP</div>
+            <div>地點</div><div class="value" id="ui-map">---</div>
+          </div>
+          <div class="section">
+            <div class="bar-row"><span>HP</span><div class="bar hp"><div id="bar-hp" class="bar-fill"></div><span id="txt-hp" class="bar-text">0/0</span></div></div>
+            <div class="bar-row"><span>同步</span><div class="bar sync"><div id="bar-sync" class="bar-fill"></div><span id="txt-sync" class="bar-text">0/0</span></div></div>
+            <div class="bar-row"><span>San</span><div class="bar san"><div id="bar-san" class="bar-fill"></div><span id="txt-san" class="bar-text">0/0</span></div></div>
+            <div class="bar-row"><span>EXP</span><div class="bar exp"><div id="bar-exp" class="bar-fill"></div><span id="txt-exp" class="bar-text">0%</span></div></div>
+          </div>
+          <div class="section">
+            <div class="stats-grid" id="stats-grid"></div>
+            <div id="level-up-alert" class="level-up-alert"></div>
+          </div>
+          <div class="section">
+            <div class="resource-grid" id="resource-grid"></div>
+          </div>
+          <div class="section">
+            <div class="kv">
+              <div>San 狀態</div><div class="value" id="ui-san-state">穩定</div>
+            </div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="command-center">
+        <section class="radar-row">
+          <section class="panel log-panel explore-log-panel">
+            <div class="panel-title" style="margin:0;padding:7px 10px"><strong>探索紀錄</strong><span id="ui-clock">00:00:00</span></div>
+            <div id="explore-log" class="scroll"></div>
+          </section>
+
+          <div class="radar-column">
+            <div class="panel scene-panel">
+              <canvas id="scene"></canvas>
+              <div class="scene-hud">
+                <div class="enemy-readout">
+                  <div id="enemy-name" class="enemy-name">等待外勤指令</div>
+                  <div id="enemy-meta" class="enemy-meta">護盾邊界靜默，湖面反射著星潮。</div>
+                  <div class="bar-row" style="grid-template-columns:1fr;margin:7px 0 0">
+                    <div class="bar hp"><div id="bar-enemy" class="bar-fill"></div><span id="txt-enemy" class="bar-text">---</span></div>
+                  </div>
+                </div>
+                <div class="strategy-box">
+                  <label for="strategy-select">戰鬥策略</label>
+                  <select id="strategy-select"></select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <section class="panel log-panel battle-log-panel">
+            <div class="panel-title" style="margin:0;padding:7px 10px"><strong>戰鬥紀錄</strong><span>高速訊息</span></div>
+            <div id="battle-log" class="scroll"></div>
+          </section>
+        </section>
+
+        <section class="panel right-panel action-panel">
+          <div class="tab-buttons">
+            <button class="active" data-tab="events">事件匣</button>
+            <button data-tab="gear">裝備</button>
+            <button data-tab="inventory">背包</button>
+            <button data-tab="supplier">供應商</button>
+            <button data-tab="settings">設定</button>
+          </div>
+          <div id="tab-content" class="scroll"></div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="creation-modal" class="modal show">
+    <div class="creation">
+      <h2>Beyond the Shield</h2>
+      <p class="lead">亞斯特拉・馬里斯的護盾仍在低鳴。你是被登記為「越盾者」的外勤者，負責穿過星海堡壘的邊界，回收星律戰爭留下的殘響、資源與答案。</p>
+      <div class="creation-grid">
+        <div class="creation-box">
+          <label for="create-name" class="text-muted">姓名</label>
+          <input id="create-name" maxlength="18" value="越盾者">
+          <div class="section">
+            <div class="text-gold">能力值分配 <span id="create-points">10</span></div>
+            <div id="create-stats"></div>
+          </div>
+        </div>
+        <div class="creation-box">
+          <div class="text-gold" style="margin-bottom:8px">外勤協定</div>
+          <div id="protocols" class="protocols"></div>
+        </div>
+      </div>
+      <div class="creation-actions">
+        <button id="create-load">讀取既有紀錄</button>
+        <button id="create-start">穿越護盾</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (() => {
+    "use strict";
+
+    const VERSION = "v0.1.4";
+    const SAVE_KEY = "project_stellody_beyond_the_shield_v014";
+    const TICK_MS = 1000;
+    const MAX_LOG = 140;
+    const MAX_BATTLE_LOG = 160;
+    const RESOURCE_KEYS = ["credits", "shard", "echo", "crystal", "scrap", "trust"];
+
+    const $ = (id) => document.getElementById(id);
+    const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+    const pct = (value, max) => max <= 0 ? 0 : clamp((value / max) * 100, 0, 100);
+    const rand = (min, max) => Math.random() * (max - min) + min;
+    const rollInt = (min, max) => Math.floor(rand(min, max + 1));
+    const chance = (p) => Math.random() < p;
+    const fmt = (n) => Math.floor(n).toLocaleString("zh-Hant-TW");
+    const nowTime = () => new Date().toLocaleTimeString("zh-Hant-TW", { hour12: false });
+    const esc = (text) => String(text ?? "").replace(/[&<>"']/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[ch]));
+
+    const STAT_META = {
+      str: { name: "力量", short: "STR", desc: "近戰、破壞、負重" },
+      dex: { name: "敏捷", short: "DEX", desc: "攻速、閃避、先制" },
+      con: { name: "體魄", short: "CON", desc: "HP、回復、耐受" },
+      int: { name: "智力", short: "INT", desc: "同步、駭入、提煉" },
+      per: { name: "感知", short: "PER", desc: "發現、暴擊、預警" },
+      cha: { name: "魅力", short: "CHA", desc: "安撫、交涉、San" }
+    };
+
+    const RESOURCE_META = {
+      credits: { name: "能源彈", color: "text-gold" },
+      shard: { name: "星律碎片", color: "text-accent" },
+      echo: { name: "記憶殘響", color: "text-violet" },
+      crystal: { name: "晶雪晶體", color: "text-accent" },
+      scrap: { name: "戰前零件", color: "text-muted" },
+      trust: { name: "供應商信任", color: "text-gold" }
+    };
+
+    const DEFAULT_THEME = {
+      accent: "#74e4c4",
+      accent2: "#93b7ff",
+      gold: "#e4c35d",
+      bg: "#070908",
+      panel: "#101412"
+    };
+
+    const SUPPLIER_QUOTES = [
+      "供應商：「這不是垃圾，是還沒遇到買家的歷史遺產。」",
+      "供應商：「你要的是急救凝膠，還是心理安慰？後者比較貴，因為要我說謊。」",
+      "供應商：「歸一教的識別牌我收。別問我拿去幹嘛，問了價格就變低。」",
+      "供應商：「越盾者這名字很帥，直到我發現它聽起來像匯率。」",
+      "供應商：「護盾外很危險。護盾內也危險，只是比較有收據。」"
+    ];
+
+    const DIVER_MESSAGES = [
+      "[DIVER] 偵測到精神狀態下降。建議：深呼吸、正念冥想，或停止直視會唱歌的屍體。",
+      "[DIVER] 你正在流血。系統已將此狀態標記為「外勤常態」。",
+      "[DIVER] 發現高價值素材。附近也發現高價值死亡機率。",
+      "[DIVER] 你的 San 值正在下降。亞斯特拉市政廳提醒你：心理健康很重要，但預算有限。",
+      "[DIVER] 偵測到歸一教廣播。已自動降低音量。你的人權已自動降低。"
+    ];
+
+    const SAFE_MESSAGES = [
+      "[SAFE] 已進入亞斯特拉。護盾穩定，稅務也穩定。",
+      "[SAFE] 食堂今日供應虹彩蛋餅。主廚表示顏色全部合法，至少目前合法。",
+      "[SAFE] 供應商提醒：護盾外禁止死亡。違者需自行負責遺物整理。",
+      "[SAFE] 星潮觀測員預測明日有晶雪。凜崖居民開始準備儀式，商人開始準備漲價。"
+    ];
+
+    const PROTOCOLS = {
+      aegis: {
+        name: "守望協定",
+        desc: "外勤裝甲優先供電。HP 與防禦提高，撤退懲罰較低。",
+        mods: { hp: 22, defense: 2 },
+        start: { first_aid_gel: 2 }
+      },
+      surveyor: {
+        name: "拾荒協定",
+        desc: "Diver 會標記可回收物。資源與能源彈獲得增加。",
+        mods: { resource: 0.16, credits: 0.12 },
+        start: { beacon: 1, phase_glove: 1 }
+      },
+      muse: {
+        name: "調律協定",
+        desc: "保留更高共鳴頻寬。同步值與 San 上限提高，事件共鳴更穩。",
+        mods: { sync: 16, san: 12, event: 0.08 },
+        start: { white_noise_chip: 2 }
+      }
+    };
+
+    const WEATHER = {
+      stable: {
+        name: "穩定階",
+        desc: "星律濃度平穩，護盾外緣的儀器讀數清晰。",
+        color: "#9ae084",
+        duration: [100, 180],
+        encounter: 1,
+        rare: 1,
+        event: 1,
+        sanDamage: 1,
+        hpDamage: 1,
+        syncRegen: 1,
+        resource: 1,
+        sanDrift: 0.08
+      },
+      hearth_rain: {
+        name: "回響之雨：爐火暖雨",
+        desc: "柔和的記憶殘響降下，像有人在遠處替世界守夜。",
+        color: "#e4c35d",
+        duration: [80, 150],
+        encounter: 0.95,
+        rare: 1.05,
+        event: 1.18,
+        sanDamage: 0.82,
+        hpDamage: 0.95,
+        syncRegen: 1.08,
+        resource: 1.12,
+        sanDrift: 0.35
+      },
+      silver_grief: {
+        name: "回響之雨：銀輝悲雨",
+        desc: "雨滴攜帶失去的聲音。靈潮體更容易靠近。",
+        color: "#c9a2ff",
+        duration: [80, 150],
+        encounter: 1.1,
+        rare: 1.25,
+        event: 1.35,
+        sanDamage: 1.34,
+        hpDamage: 0.95,
+        syncRegen: 1,
+        resource: 1.1,
+        sanDrift: -0.1
+      },
+      industrial_rain: {
+        name: "回響之雨：工業怒雨",
+        desc: "鐵鏽味的雨打在舊機械上，像城市仍在夢裡開火。",
+        color: "#f1a661",
+        duration: [70, 130],
+        encounter: 1.22,
+        rare: 1.18,
+        event: 1.42,
+        sanDamage: 1.18,
+        hpDamage: 1.12,
+        syncRegen: 0.9,
+        resource: 1.18,
+        sanDrift: -0.18
+      },
+      crystal_snow: {
+        name: "晶雪",
+        desc: "秩序化的星律晶粒降下，凜崖方向閃著冷光。",
+        color: "#80d8ff",
+        duration: [90, 170],
+        encounter: 1.02,
+        rare: 1.2,
+        event: 1.12,
+        sanDamage: 0.92,
+        hpDamage: 1.02,
+        syncRegen: 1.04,
+        resource: 1.35,
+        sanDrift: 0.12
+      },
+      stellody_storm: {
+        name: "星律風暴",
+        desc: "極光橫過護盾外海，高風險的資料與晶體同時浮現。",
+        color: "#74e4c4",
+        duration: [60, 120],
+        encounter: 1.32,
+        rare: 1.75,
+        event: 1.65,
+        sanDamage: 1.45,
+        hpDamage: 1.12,
+        syncRegen: 1.18,
+        resource: 1.55,
+        sanDrift: -0.32
+      },
+      tidal_noise: {
+        name: "潮噪風暴",
+        desc: "純粹心靈噪音覆蓋通訊頻道，Diver 出現短暫重影。",
+        color: "#ff7474",
+        duration: [45, 95],
+        encounter: 1.38,
+        rare: 1.35,
+        event: 1.45,
+        sanDamage: 1.72,
+        hpDamage: 1.08,
+        syncRegen: 0.72,
+        resource: 1.2,
+        sanDrift: -0.74
+      },
+      silence: {
+        name: "寂靜期",
+        desc: "星律像被抽離。安全一些，也空洞一些。",
+        color: "#98a79e",
+        duration: [70, 130],
+        encounter: 0.76,
+        rare: 0.72,
+        event: 0.68,
+        sanDamage: 0.58,
+        hpDamage: 0.95,
+        syncRegen: 0.48,
+        resource: 0.72,
+        sanDrift: 0.02,
+        skillLock: true
+      }
+    };
+
+    const MAPS = {
+      astra_maris: {
+        name: "亞斯特拉．馬里斯",
+        desc: "星海堡壘內部。護盾、湖水、供應商的工作台與短暫安心都在這裡。",
+        unlock: 1,
+        danger: "city",
+        safe: true,
+        sanPressure: -0.28,
+        syncNoise: 0,
+        encounterBase: 0,
+        eventBase: 0.009,
+        monsters: [],
+        events: ["ghost_vending_machine", "psychology_booth", "supplier_warranty"],
+        weather: [["stable", 4], ["hearth_rain", 2], ["crystal_snow", 2], ["silence", 1]]
+      },
+      shield_edge: {
+        name: "護盾外緣",
+        desc: "亞斯特拉・馬里斯能量護盾外的巡邏帶，仍能聽見城市低鳴。",
+        unlock: 1,
+        danger: "blue",
+        sanPressure: 0.02,
+        syncNoise: 0,
+        encounterBase: 0.18,
+        eventBase: 0.013,
+        monsters: [["rust_mite", 4], ["feral_dog", 4], ["atonement_scout", 1]],
+        events: ["lost_signal", "atonement_checkpoint", "warm_lunch", "ghost_vending_machine"],
+        weather: [["stable", 5], ["hearth_rain", 2], ["crystal_snow", 1], ["silence", 1]]
+      },
+      broken_road: {
+        name: "破碎公路",
+        desc: "通往舊世界的裂解路面，掠奪者與突變野獸在護欄間遊蕩。",
+        unlock: 1,
+        danger: "blue",
+        sanPressure: 0.05,
+        syncNoise: 0.03,
+        encounterBase: 0.22,
+        eventBase: 0.016,
+        monsters: [["feral_dog", 5], ["raider", 4], ["crystal_hare", 2], ["atonement_scout", 1]],
+        events: ["atonement_checkpoint", "abandoned_cache", "severan_trail", "fitness_ad"],
+        weather: [["stable", 4], ["industrial_rain", 2], ["hearth_rain", 1], ["tidal_noise", 1]]
+      },
+      rain_canopy: {
+        name: "回響雨棚",
+        desc: "傾倒建築與藤蔓形成濕熱頂棚，回響之雨在此停留最久。",
+        unlock: 3,
+        danger: "purple",
+        sanPressure: 0.12,
+        syncNoise: 0.06,
+        encounterBase: 0.24,
+        eventBase: 0.022,
+        monsters: [["mnemonic_echo", 5], ["crystal_hare", 3], ["weeping_bloom", 2], ["raider", 1]],
+        events: ["weeping_echo", "memory_pool", "forgotten_classroom", "fitness_ad"],
+        weather: [["hearth_rain", 3], ["silver_grief", 3], ["stable", 2], ["stellody_storm", 1]]
+      },
+      shivercliffs: {
+        name: "凜崖後山",
+        desc: "靠近沉律亞人聚落的寒冷坡道，晶雪常在岩壁間發光。",
+        unlock: 5,
+        danger: "purple",
+        sanPressure: 0.08,
+        syncNoise: 0.08,
+        encounterBase: 0.23,
+        eventBase: 0.021,
+        monsters: [["crystal_stag", 4], ["shard_wolf", 3], ["severed_drone", 2], ["atonement_scout", 1]],
+        events: ["crystal_vein", "severan_trail", "shield_fragment"],
+        weather: [["crystal_snow", 4], ["stable", 2], ["silver_grief", 1], ["tidal_noise", 1]]
+      },
+      relay_station: {
+        name: "廢棄中繼站",
+        desc: "戰前星網節點殘骸，無人機仍按不存在的命令巡航。",
+        unlock: 7,
+        danger: "purple",
+        sanPressure: 0.1,
+        syncNoise: 0.18,
+        encounterBase: 0.25,
+        eventBase: 0.023,
+        monsters: [["severed_drone", 5], ["relay_seraph", 2], ["data_leech", 3], ["atonement_logician", 1]],
+        events: ["lost_signal", "orphan_drone", "atonement_checkpoint", "atonement_survey"],
+        weather: [["stable", 3], ["industrial_rain", 3], ["silence", 2], ["stellody_storm", 1]]
+      },
+      opera_ruin: {
+        name: "廢棄歌劇院",
+        desc: "禁歌之後仍在共鳴的舞台。掌聲、哭聲與警報聲重疊。",
+        unlock: 10,
+        danger: "red",
+        sanPressure: 0.22,
+        syncNoise: 0.12,
+        encounterBase: 0.27,
+        eventBase: 0.028,
+        monsters: [["mnemonic_echo", 4], ["choir_wraith", 4], ["data_leech", 2], ["relay_seraph", 1]],
+        events: ["weeping_echo", "forgotten_classroom", "memory_pool", "silent_aria"],
+        weather: [["silver_grief", 4], ["stellody_storm", 2], ["tidal_noise", 2], ["hearth_rain", 1]]
+      },
+      hollow_fog: {
+        name: "空無霧帶",
+        desc: "星律近乎消失的灰白地帶，適合穩定掛機，卻也難有奇遇。",
+        unlock: 12,
+        danger: "red",
+        sanPressure: 0.03,
+        syncNoise: 0.3,
+        encounterBase: 0.17,
+        eventBase: 0.008,
+        monsters: [["hollow_marauder", 4], ["severed_drone", 2], ["rust_mite", 2], ["data_leech", 1]],
+        events: ["abandoned_cache", "lost_signal", "shield_fragment", "atonement_survey"],
+        weather: [["silence", 5], ["stable", 3], ["industrial_rain", 1], ["tidal_noise", 1]]
+      }
+    };
+
+    const ENEMIES = {
+      rust_mite: {
+        name: "鏽蝕噬蟲",
+        type: "廢土野獸",
+        level: 1,
+        hp: 24,
+        atkHp: 4,
+        atkSan: 0,
+        atkSync: 0,
+        defense: 0,
+        evasion: 0.06,
+        exp: 8,
+        credits: [4, 10],
+        color: "#9ae084",
+        drops: [{ id: "scrap", chance: 0.34, qty: [1, 2] }, { id: "first_aid_gel", chance: 0.05, qty: [1, 1] }]
+      },
+      feral_dog: {
+        name: "鋸齒野犬",
+        type: "廢土野獸",
+        level: 2,
+        hp: 38,
+        atkHp: 7,
+        atkSan: 0,
+        atkSync: 0,
+        defense: 1,
+        evasion: 0.1,
+        exp: 14,
+        credits: [7, 18],
+        color: "#f1a661",
+        drops: [{ id: "scrap", chance: 0.24, qty: [1, 2] }, { id: "splinter_knife", chance: 0.035, qty: [1, 1] }]
+      },
+      crystal_hare: {
+        name: "晶化野兔",
+        type: "晶化野獸",
+        level: 3,
+        hp: 42,
+        atkHp: 6,
+        atkSan: 2,
+        atkSync: 0,
+        defense: 2,
+        evasion: 0.18,
+        exp: 20,
+        credits: [9, 22],
+        color: "#80d8ff",
+        drops: [{ id: "crystal", chance: 0.32, qty: [1, 2] }, { id: "shard", chance: 0.18, qty: [1, 1] }]
+      },
+      raider: {
+        name: "公路掠奪者",
+        type: "人類敵人",
+        level: 4,
+        hp: 58,
+        atkHp: 10,
+        atkSan: 0,
+        atkSync: 1,
+        defense: 2,
+        evasion: 0.08,
+        exp: 28,
+        credits: [18, 38],
+        color: "#ff7474",
+        drops: [{ id: "scrap", chance: 0.38, qty: [1, 3] }, { id: "roadbreaker", chance: 0.025, qty: [1, 1] }, { id: "first_aid_gel", chance: 0.08, qty: [1, 1] }]
+      },
+      atonement_scout: {
+        name: "歸一教斥候",
+        type: "人類敵人",
+        level: 5,
+        hp: 66,
+        atkHp: 11,
+        atkSan: 1,
+        atkSync: 3,
+        defense: 3,
+        evasion: 0.11,
+        exp: 36,
+        credits: [22, 48],
+        color: "#eaf0e7",
+        drops: [{ id: "scrap", chance: 0.46, qty: [1, 3] }, { id: "atonement_tag", chance: 0.13, qty: [1, 1] }, { id: "white_noise_chip", chance: 0.05, qty: [1, 1] }]
+      },
+      mnemonic_echo: {
+        name: "靈潮殘響",
+        type: "星律生物",
+        level: 6,
+        hp: 72,
+        atkHp: 2,
+        atkSan: 9,
+        atkSync: 2,
+        defense: 1,
+        evasion: 0.12,
+        exp: 44,
+        credits: [12, 26],
+        color: "#c9a2ff",
+        drops: [{ id: "echo", chance: 0.42, qty: [1, 2] }, { id: "shard", chance: 0.26, qty: [1, 2] }, { id: "echo_lantern", chance: 0.025, qty: [1, 1] }]
+      },
+      weeping_bloom: {
+        name: "哭雨花冠",
+        type: "星律生物",
+        level: 7,
+        hp: 88,
+        atkHp: 4,
+        atkSan: 11,
+        atkSync: 0,
+        defense: 3,
+        evasion: 0.07,
+        exp: 54,
+        credits: [10, 24],
+        color: "#c9a2ff",
+        drops: [{ id: "echo", chance: 0.48, qty: [1, 3] }, { id: "sedative_mist", chance: 0.05, qty: [1, 1] }]
+      },
+      shard_wolf: {
+        name: "裂晶狼",
+        type: "晶化野獸",
+        level: 8,
+        hp: 104,
+        atkHp: 15,
+        atkSan: 3,
+        atkSync: 0,
+        defense: 5,
+        evasion: 0.14,
+        exp: 66,
+        credits: [20, 46],
+        color: "#80d8ff",
+        drops: [{ id: "crystal", chance: 0.48, qty: [1, 3] }, { id: "crystal_pick", chance: 0.035, qty: [1, 1] }]
+      },
+      crystal_stag: {
+        name: "晶角鹿",
+        type: "晶化野獸",
+        level: 9,
+        hp: 122,
+        atkHp: 16,
+        atkSan: 4,
+        atkSync: 0,
+        defense: 7,
+        evasion: 0.09,
+        exp: 76,
+        credits: [24, 56],
+        color: "#80d8ff",
+        drops: [{ id: "crystal", chance: 0.62, qty: [2, 4] }, { id: "shard", chance: 0.28, qty: [1, 2] }, { id: "shiver_coat", chance: 0.024, qty: [1, 1] }]
+      },
+      severed_drone: {
+        name: "斷線無人機",
+        type: "機械敵人",
+        level: 9,
+        hp: 116,
+        atkHp: 14,
+        atkSan: 0,
+        atkSync: 7,
+        defense: 6,
+        evasion: 0.16,
+        exp: 80,
+        credits: [28, 62],
+        color: "#93b7ff",
+        drops: [{ id: "scrap", chance: 0.66, qty: [2, 5] }, { id: "subflux_battery", chance: 0.08, qty: [1, 1] }, { id: "drone_lens", chance: 0.035, qty: [1, 1] }]
+      },
+      data_leech: {
+        name: "資料淤泥蛭",
+        type: "潮噪污染體",
+        level: 10,
+        hp: 132,
+        atkHp: 8,
+        atkSan: 12,
+        atkSync: 8,
+        defense: 4,
+        evasion: 0.12,
+        exp: 96,
+        credits: [18, 42],
+        color: "#74e4c4",
+        drops: [{ id: "shard", chance: 0.42, qty: [2, 3] }, { id: "echo", chance: 0.28, qty: [1, 2] }, { id: "noise_filter", chance: 0.03, qty: [1, 1] }]
+      },
+      relay_seraph: {
+        name: "中繼站熾天使",
+        type: "機械敵人",
+        level: 12,
+        hp: 168,
+        atkHp: 20,
+        atkSan: 4,
+        atkSync: 12,
+        defense: 9,
+        evasion: 0.13,
+        exp: 132,
+        credits: [46, 92],
+        color: "#eaf0e7",
+        drops: [{ id: "scrap", chance: 0.78, qty: [3, 6] }, { id: "phase_carbine", chance: 0.022, qty: [1, 1] }, { id: "subflux_battery", chance: 0.12, qty: [1, 2] }]
+      },
+      choir_wraith: {
+        name: "合唱亡影",
+        type: "星律生物",
+        level: 13,
+        hp: 176,
+        atkHp: 5,
+        atkSan: 18,
+        atkSync: 4,
+        defense: 5,
+        evasion: 0.14,
+        exp: 150,
+        credits: [24, 55],
+        color: "#c9a2ff",
+        drops: [{ id: "echo", chance: 0.68, qty: [2, 4] }, { id: "aria_thread", chance: 0.028, qty: [1, 1] }, { id: "echo_lantern", chance: 0.036, qty: [1, 1] }]
+      },
+      atonement_logician: {
+        name: "歸一教訊律師",
+        type: "人類敵人",
+        level: 14,
+        hp: 190,
+        atkHp: 18,
+        atkSan: 5,
+        atkSync: 16,
+        defense: 8,
+        evasion: 0.15,
+        exp: 166,
+        credits: [66, 120],
+        color: "#eaf0e7",
+        drops: [{ id: "atonement_tag", chance: 0.42, qty: [1, 2] }, { id: "scrap", chance: 0.62, qty: [3, 6] }, { id: "logic_veil", chance: 0.02, qty: [1, 1] }]
+      },
+      hollow_marauder: {
+        name: "空無霧行者",
+        type: "人類敵人",
+        level: 15,
+        hp: 214,
+        atkHp: 24,
+        atkSan: 3,
+        atkSync: 4,
+        defense: 10,
+        evasion: 0.2,
+        exp: 188,
+        credits: [82, 150],
+        color: "#98a79e",
+        drops: [{ id: "scrap", chance: 0.55, qty: [3, 7] }, { id: "hollow_cloak", chance: 0.02, qty: [1, 1] }, { id: "first_aid_gel", chance: 0.12, qty: [1, 2] }]
+      }
+    };
+
+    const ITEMS = {
+      starter_blade: {
+        name: "護盾外勤刀",
+        type: "equipment",
+        slot: "weapon",
+        kind: "melee",
+        rarity: "制式",
+        damage: [6, 10],
+        stats: { str: 1 },
+        value: 18,
+        desc: "亞斯特拉防衛團交付的基礎外勤刀。保固內容不包含恐懼、手抖與英雄主義。"
+      },
+      splinter_knife: {
+        name: "裂片短刀",
+        type: "equipment",
+        slot: "weapon",
+        kind: "melee",
+        rarity: "拾荒",
+        damage: [8, 15],
+        stats: { dex: 1 },
+        value: 46,
+        desc: "由破碎車體彈簧與護欄片磨成的短刀。"
+      },
+      roadbreaker: {
+        name: "路障破拆錘",
+        type: "equipment",
+        slot: "weapon",
+        kind: "melee",
+        rarity: "重型",
+        damage: [14, 25],
+        stats: { str: 2, con: 1 },
+        value: 140,
+        desc: "掠奪者用來拆路障的重錘，也能拆開不願讓路的東西。"
+      },
+      phase_carbine: {
+        name: "相位短卡賓",
+        type: "equipment",
+        slot: "weapon",
+        kind: "ranged",
+        rarity: "戰前",
+        damage: [18, 30],
+        stats: { dex: 2, per: 2 },
+        value: 420,
+        desc: "戰前產品。說明書保證安全，戰前公司已不存在。"
+      },
+      patched_coat: {
+        name: "補丁外勤衣",
+        type: "equipment",
+        slot: "armor",
+        rarity: "制式",
+        defense: 2,
+        stats: { con: 1 },
+        value: 16,
+        desc: "防風、防塵、防輕微後悔。"
+      },
+      shiver_coat: {
+        name: "凜崖覆雪斗篷",
+        type: "equipment",
+        slot: "armor",
+        rarity: "沉律",
+        defense: 5,
+        stats: { con: 2, cha: 1 },
+        san: 8,
+        value: 260,
+        desc: "沉律亞人常用的保溫斗篷，縫著能捕捉晶雪的細網。"
+      },
+      hollow_cloak: {
+        name: "章魚迷彩斗篷",
+        type: "equipment",
+        slot: "armor",
+        rarity: "黑市",
+        defense: 4,
+        stats: { dex: 2, per: 2 },
+        value: 360,
+        desc: "能在第一輪接敵時降低被發現的機率。"
+      },
+      old_diver: {
+        name: "舊型 Diver",
+        type: "equipment",
+        slot: "module",
+        rarity: "制式",
+        sync: 12,
+        stats: { int: 1 },
+        value: 20,
+        desc: "城市外勤者的身分、地圖與同步介面。"
+      },
+      drone_lens: {
+        name: "無人機測距鏡",
+        type: "equipment",
+        slot: "module",
+        rarity: "機械",
+        sync: 10,
+        stats: { per: 2, dex: 1 },
+        value: 190,
+        desc: "拆自斷線無人機的鏡頭，能提前標記敵意熱源。"
+      },
+      noise_filter: {
+        name: "潮噪濾芯",
+        type: "equipment",
+        slot: "module",
+        rarity: "星律",
+        sync: 18,
+        san: 12,
+        stats: { int: 2, per: 1 },
+        value: 310,
+        desc: "把資料淤泥的噪音折成可讀波形的濾芯。"
+      },
+      echo_lantern: {
+        name: "殘響提燈",
+        type: "equipment",
+        slot: "charm",
+        rarity: "星律",
+        san: 18,
+        stats: { cha: 2 },
+        value: 220,
+        desc: "燈芯是一段溫柔記憶。請勿用來照財務報表。"
+      },
+      logic_veil: {
+        name: "聖言邏輯面罩",
+        type: "equipment",
+        slot: "charm",
+        rarity: "歸一",
+        sync: 24,
+        stats: { int: 3, cha: -1 },
+        value: 500,
+        desc: "訊律師的輔助面罩。太安靜，安靜得像被計算過。"
+      },
+      aria_thread: {
+        name: "禁歌銀線",
+        type: "equipment",
+        slot: "charm",
+        rarity: "歌劇院",
+        san: 22,
+        stats: { cha: 2, per: 2 },
+        value: 620,
+        desc: "從舞台帷幕上拆下的銀線，仍會在風裡輕輕振動。"
+      },
+      crystal_pick: {
+        name: "裂晶鎬",
+        type: "tool",
+        stack: true,
+        value: 90,
+        desc: "提高晶體採集事件的收益。"
+      },
+      phase_glove: {
+        name: "隔熱相位手套",
+        type: "tool",
+        stack: true,
+        value: 75,
+        desc: "處理高熱殘骸與晶脈時更安全。"
+      },
+      beacon: {
+        name: "廢土信標",
+        type: "consumable",
+        stack: true,
+        value: 70,
+        desc: "發出定位訊號。吸引救援、商人、怪物，以及幾種很難分類的人。",
+        use: "beacon"
+      },
+      first_aid_gel: {
+        name: "急救凝膠",
+        type: "consumable",
+        stack: true,
+        value: 25,
+        desc: "塗上去會痛。沒塗會更痛。醫學有時很簡單。",
+        use: "heal"
+      },
+      white_noise_chip: {
+        name: "白噪晶片",
+        type: "consumable",
+        stack: true,
+        value: 36,
+        desc: "播放海浪、雨聲與不含尖叫的人聲頻段。",
+        use: "san"
+      },
+      sedative_mist: {
+        name: "鎮靜霧劑",
+        type: "consumable",
+        stack: true,
+        value: 58,
+        desc: "抑制 San 下降，不能解決恐懼，只能把它按住。",
+        use: "mist"
+      },
+      subflux_battery: {
+        name: "潛流電池",
+        type: "consumable",
+        stack: true,
+        value: 64,
+        desc: "官方建議不要舔。黑市建議高價賣給會舔的人。",
+        use: "sync_regen"
+      },
+      atonement_tag: {
+        name: "歸一教識別牌",
+        type: "material",
+        stack: true,
+        value: 45,
+        desc: "證明持有人曾經屬於一個非常有秩序的問題。"
+      }
+    };
+
+    const STRATEGIES = {
+      balanced: { name: "平衡外勤", desc: "穩定攻擊，不額外消耗同步值。" },
+      conserve: { name: "保守行動", desc: "傷害降低，閃避與 San 回復略增。" },
+      phase_blade: { name: "態轉換刃", desc: "消耗同步值造成額外傷害，寂靜期無法使用。" },
+      signal_hack: { name: "訊號解析", desc: "對機械與歸一教敵人有效，可干擾攻擊。" },
+      resonance_hymn: { name: "低聲調律", desc: "以共鳴攻擊星律生物，並回復少量 San。" }
+    };
+
+    const EVENTS = {
+      weeping_echo: {
+        name: "哭泣的靈潮體",
+        type: "星律事件",
+        desc: "一團模糊的人形殘響在雨中呼喚某人的名字。它連續三次拼錯。看來死後也逃不過資料庫錯字。",
+        options: [
+          { label: "告訴它正確拼法", stat: "cha", diff: 12, reward: { echo: [2, 3], san: 10, exp: 28 }, fail: { san: -14 }, successText: "殘響終於唸對名字，然後安靜消散。Diver 提醒：拼字拯救不了世界，但今天救了一個鬼。", failText: "你糾正了拼字。殘響糾正了你的自信。" },
+          { label: "用 Diver 自動校正", stat: "int", diff: 13, reward: { shard: [2, 3], sync: 8, exp: 24 }, fail: { sync: -14 }, successText: "Diver 自動校正了名字，也順手保留了悲傷。系統稱之為資料完整性。", failText: "Diver 把名字改成廣告推薦字串。殘響開始哭第四遍。" },
+          { label: "結束這場客服災難", stat: "per", diff: 8, reward: { echo: [1, 1], exp: 12 }, fail: { san: -3 }, successText: "你把事件記錄成「客訴已結案」。沒有人滿意，但至少安靜了。", failText: "客服災難升級為售後服務。你是售後。" }
+        ]
+      },
+      atonement_checkpoint: {
+        name: "歸一教士兵臨檢",
+        type: "人類事件",
+        desc: "白色士兵攔住去路，微笑要求你交出 Diver 接受身份校準。他的語氣像客服，槍口也很客服。",
+        options: [
+          { label: "趁他朗讀隱私條款時逃跑", stat: "dex", diff: 13, reward: { credits: [45, 90], scrap: [1, 3], exp: 30 }, fail: { hpPct: -0.22, mapReturn: true }, successText: "你在第三十七條資料授權前溜走。這是你今天最接近自由意志的一刻。", failText: "你被完成了一次免費校準。好消息：Diver 現在很乾淨。壞消息：你的頭也是。" },
+          { label: "胡謅一句母親會說的廢話", stat: "cha", diff: 14, reward: { credits: [35, 75], trust: [1, 1], exp: 28 }, fail: { san: -10, hpPct: -0.12 }, successText: "士兵沉思片刻，決定這句話空洞得很神聖。你被放行。", failText: "你的神諭太有人味了。歸一教對此深表遺憾，並開始補救。" },
+          { label: "請供應商假裝你是重要客戶", stat: "int", diff: 12, needsTrust: 1, reward: { atonement_tag: [1, 2], trust: [1, 1], exp: 26 }, fail: { credits: [-25, -10], sync: -12 }, successText: "供應商用非常昂貴的語氣說你不能被碰。士兵相信了，因為昂貴通常接近權威。", failText: "供應商接通後第一句是「你哪位」。局面短暫地變得非常誠實。" }
+        ]
+      },
+      lost_signal: {
+        name: "失落訊號",
+        type: "星網事件",
+        desc: "Diver 收到一段戰前座標，附帶廣告語：「距離最近的家庭餐廳只剩 97 年營業中斷。」",
+        options: [
+          { label: "解析座標", stat: "int", diff: 12, reward: { shard: [1, 3], scrap: [2, 4], exp: 24 }, fail: { sync: -16 }, successText: "你找到一個補給點。店員不在，顧客也不在，促銷活動仍在。", failText: "座標把你導向停車場。好消息：不用停車費了。" },
+          { label: "跟著廣告走", stat: "per", diff: 11, reward: { credits: [25, 70], exp: 20 }, fail: { san: -6 }, successText: "廣告沒有騙你。餐廳確實在那裡，只是餐和廳都分別死了。", failText: "你追到一面寫著『歡迎回家』的牆。牆後面沒有家。" },
+          { label: "封鎖過期行銷", stat: "con", diff: 7, reward: { exp: 10, trust: [1, 1] }, fail: {}, successText: "Diver 封鎖廣告。人類文明短暫進步了一毫米。", failText: "廣告問你是否確定。它比大部分人更在乎你的選擇。" }
+        ]
+      },
+      abandoned_cache: {
+        name: "掩埋補給箱",
+        type: "拾荒事件",
+        desc: "你挖出一個軍規補給箱。外面貼著「開啟前請閱讀安全守則」。安全守則在箱子裡。",
+        options: [
+          { label: "用常識以外的方式打開", stat: "str", diff: 10, reward: { credits: [20, 60], first_aid_gel: [1, 2], scrap: [1, 3], exp: 16 }, fail: { hpPct: -0.08 }, successText: "補給箱打開了。安全守則第一條：不要這樣打開。", failText: "補給箱證明了它確實符合軍規：內容物沒壞，開箱的人壞了。" },
+          { label: "解開鎖具", stat: "int", diff: 11, reward: { subflux_battery: [1, 1], scrap: [2, 4], exp: 20 }, fail: { sync: -10 }, successText: "鎖具承認你比它的設計者更清醒。這不是很高的標準。", failText: "鎖具發出一聲合法的電擊。" },
+          { label: "先聽聽它是不是在倒數", stat: "per", diff: 9, reward: { beacon: [1, 1], credits: [15, 35], exp: 14 }, fail: {}, successText: "你聽見倒數聲。原來是箱內的宣傳錄音，仍在提醒士兵準時用餐。", failText: "它沒有倒數。這種安靜反而更不禮貌。" }
+        ]
+      },
+      severan_trail: {
+        name: "沉律亞人的足跡",
+        type: "社群事件",
+        desc: "細小足印沿著冷風走向岩壁，旁邊有晶雪被收集過的痕跡。",
+        options: [
+          { label: "尊重距離", stat: "cha", diff: 9, reward: { trust: [1, 2], san: 5, exp: 16 }, fail: {} },
+          { label: "追蹤路線", stat: "per", diff: 12, reward: { crystal: [2, 4], exp: 22 }, fail: { san: -5 } },
+          { label: "留下補給", stat: "con", diff: 8, cost: { first_aid_gel: 1 }, reward: { trust: [2, 3], exp: 18 }, fail: { credits: [-10, -6] } }
+        ]
+      },
+      crystal_vein: {
+        name: "晶雪裂脈",
+        type: "採集事件",
+        desc: "岩壁內側浮出規則藍光，像某種被凍住的樂譜。",
+        options: [
+          { label: "裂晶鎬採集", stat: "str", diff: 10, needsItem: "crystal_pick", reward: { crystal: [4, 7], shard: [1, 2], exp: 24 }, fail: { hpPct: -0.07 } },
+          { label: "相位手套剝離", stat: "int", diff: 11, needsItem: "phase_glove", reward: { crystal: [3, 5], sync: 8, exp: 22 }, fail: { sync: -12 } },
+          { label: "只取表層", stat: "per", diff: 7, reward: { crystal: [1, 3], exp: 10 }, fail: {} }
+        ]
+      },
+      memory_pool: {
+        name: "記憶淺池",
+        type: "星律事件",
+        desc: "水面映出陌生家庭的晚餐，熱湯、笑聲與一盞不該還亮著的燈。",
+        options: [
+          { label: "伸手共鳴", stat: "cha", diff: 14, reward: { echo: [3, 5], san: 14, exp: 34 }, fail: { san: -18 } },
+          { label: "採樣封存", stat: "int", diff: 12, reward: { shard: [2, 4], echo: [1, 2], exp: 28 }, fail: { sync: -14 } },
+          { label: "靜坐旁觀", stat: "con", diff: 8, reward: { san: 8, exp: 10 }, fail: {} }
+        ]
+      },
+      forgotten_classroom: {
+        name: "被藤蔓佔據的教室",
+        type: "記憶事件",
+        desc: "舊課桌排成沉默的方陣。黑板上還有一半被中斷的題目。",
+        options: [
+          { label: "整理教室", stat: "con", diff: 11, reward: { echo: [2, 3], san: 8, exp: 26 }, fail: { hpPct: -0.05 } },
+          { label: "讀取塗鴉", stat: "per", diff: 10, reward: { echo: [1, 3], shard: [1, 1], exp: 22 }, fail: { san: -8 } },
+          { label: "把名字留下", stat: "cha", diff: 12, reward: { san: 12, trust: [1, 1], exp: 24 }, fail: { san: -5 } }
+        ]
+      },
+      orphan_drone: {
+        name: "孤兒無人機",
+        type: "機械事件",
+        desc: "一台小型無人機把你誤認成舊日維修員，乖乖停在你肩邊。",
+        options: [
+          { label: "重新配對", stat: "int", diff: 13, reward: { scrap: [3, 5], drone_lens: [1, 1], exp: 32 }, fail: { sync: -16 } },
+          { label: "拆出零件", stat: "dex", diff: 10, reward: { scrap: [3, 6], exp: 20 }, fail: { hpPct: -0.06 } },
+          { label: "送它回巢", stat: "cha", diff: 11, reward: { trust: [1, 2], san: 6, exp: 18 }, fail: {} }
+        ]
+      },
+      shield_fragment: {
+        name: "護盾碎光",
+        type: "城市事件",
+        desc: "一片來自亞斯特拉護盾的虹彩殘光卡在廢鐵之間。",
+        options: [
+          { label: "穩定回收", stat: "int", diff: 12, reward: { shard: [2, 4], crystal: [1, 2], exp: 26 }, fail: { sync: -12 } },
+          { label: "以手遮護", stat: "con", diff: 11, reward: { san: 10, crystal: [2, 3], exp: 22 }, fail: { hpPct: -0.08 } },
+          { label: "向城市回報", stat: "cha", diff: 9, reward: { trust: [1, 2], credits: [20, 45], exp: 18 }, fail: {} }
+        ]
+      },
+      warm_lunch: {
+        name: "尚有餘溫的飯盒",
+        type: "生活事件",
+        desc: "有人把一只飯盒留在護盾外緣，上面貼著供應商的潦草標籤。",
+        options: [
+          { label: "收下好意", stat: "cha", diff: 8, reward: { san: 8, hpPct: 0.12, exp: 8 }, fail: {} },
+          { label: "留下回禮", stat: "per", diff: 9, cost: { credits: 20 }, reward: { trust: [1, 2], exp: 12 }, fail: {} }
+        ]
+      },
+      silent_aria: {
+        name: "無聲詠唱",
+        type: "歌劇院事件",
+        desc: "舞台中央沒有歌聲，卻有一段旋律直接浮現在你的腦中。票價、掌聲與觀眾都已不存在，唯有加班排練留下來了。",
+        options: [
+          { label: "跟上旋律", stat: "cha", diff: 15, reward: { aria_thread: [1, 1], echo: [3, 5], exp: 52 }, fail: { san: -24 }, successText: "你跟上了旋律。某個早已不存在的座位區，像是終於有人坐下。", failText: "你沒跟上旋律。舞台燈亮了一下，像是在給你差評。" },
+          { label: "用 Diver 錄譜", stat: "int", diff: 14, reward: { shard: [4, 6], echo: [2, 4], exp: 42 }, fail: { sync: -24 }, successText: "Diver 錄下曲譜，並標註：觀眾反應資料遺失。其實不是遺失。", failText: "Diver 自動混音。歌劇院沉默了一秒，像在忍耐。" },
+          { label: "在副歌前逃走", stat: "dex", diff: 8, reward: { exp: 12 }, fail: { san: -4 }, successText: "你成功在副歌前離場。藝術沒有追上你，帳單也暫時沒有。", failText: "你慢了一拍。副歌記住了你。" }
+        ]
+      },
+      ghost_vending_machine: {
+        name: "幽靈販賣機",
+        type: "奇物事件",
+        desc: "一台戰前販賣機在午夜亮起。螢幕顯示：「請投入能源彈，並說出你真正渴望的東西。」小字補充：本機不提供退款、救贖或合理解釋。",
+        options: [
+          { label: "我要勇氣", stat: "cha", diff: 10, cost: { credits: 18 }, reward: { san: 8, exp: 16 }, fail: { san: -6 }, successText: "販賣機吐出一罐勇氣口味汽水。成分表第一項是糖，第二項是否認。", failText: "販賣機吐出一隻活的變異蟑螂。牠看起來比你勇敢。" },
+          { label: "我要安靜", stat: "con", diff: 9, cost: { credits: 18 }, reward: { white_noise_chip: [1, 1], exp: 14 }, fail: { sync: -8 }, successText: "機器吐出白噪晶片。它播放的安靜裡，只有一點點人在哭。", failText: "販賣機開始播放廣告。你獲得了沉默的反義詞。" },
+          { label: "問它收不收二手靈魂", stat: "int", diff: 13, reward: { echo: [1, 3], trust: [1, 1], exp: 24 }, fail: { san: -10 }, successText: "販賣機接受估價，供應商晚點會來搬。你最好不要問他客戶是誰。", failText: "螢幕顯示：靈魂折舊過高。這句話傷害意外地準。" }
+        ]
+      },
+      atonement_survey: {
+        name: "歸一教滿意度調查",
+        type: "歸一教事件",
+        desc: "你撿到一台歸一教民意終端。螢幕詢問：「你今天對母親的救贖滿意嗎？」選項只有「非常滿意」和「重新教育」。",
+        options: [
+          { label: "破解隱藏選項", stat: "int", diff: 15, reward: { shard: [2, 4], atonement_tag: [1, 1], exp: 38 }, fail: { sync: -18 }, successText: "你找到第三個選項：「稍後提醒」。人類文明因此延長了五分鐘。", failText: "系統回覆：匿名身份已登記。它甚至貼心地標了你的座標。" },
+          { label: "留下非常有禮貌的髒話", stat: "cha", diff: 13, reward: { san: 10, exp: 26 }, fail: { san: -12 }, successText: "你的留言語氣溫和、內容不可饒恕。Diver 將它標記為文學。", failText: "終端播放感謝語音，並將你列入關懷名單。" },
+          { label: "提供物理回饋", stat: "str", diff: 11, reward: { scrap: [3, 5], exp: 20 }, fail: { hpPct: -0.08 }, successText: "民意終端終於聽見人民的聲音。聲音很像金屬碎裂。", failText: "終端符合軍規。你的手先提出辭職。" }
+        ]
+      },
+      fitness_ad: {
+        name: "戰前健身廣告",
+        type: "戰前事件",
+        desc: "一個半壞的全息廣告投影出肌肉教練。他大喊：「每天三分鐘，找回理想人生！」你身後有幾隻晶化野犬正在找回理想午餐。",
+        options: [
+          { label: "跟著廣告暖身後逃跑", stat: "dex", diff: 12, reward: { san: 6, exp: 22 }, fail: { hpPct: -0.1 }, successText: "你完成三分鐘熱身，也完成三十秒逃亡。教練說這叫高強度間歇。", failText: "你拉傷了腿。廣告稱讚你的參與感。" },
+          { label: "用啞鈴打狗", stat: "str", diff: 13, reward: { credits: [20, 50], scrap: [1, 3], exp: 28 }, fail: { hpPct: -0.16 }, successText: "你用啞鈴恢復了局部秩序。肌肉教練把這段剪成宣傳片。", failText: "啞鈴很重，狗也很專業。" },
+          { label: "把廣告改成警報器", stat: "int", diff: 12, reward: { beacon: [1, 1], exp: 24 }, fail: { sync: -12 }, successText: "廣告開始尖叫。附近所有東西都同意這比健身誠實。", failText: "你把警報器改成健身廣告。世界沒有因此更好。" }
+        ]
+      },
+      psychology_booth: {
+        name: "免費心理諮商亭",
+        type: "安全區事件",
+        desc: "你發現一座戰前心理諮商亭。螢幕裂了，但語音依然溫柔：「請描述你的壓力來源。」你看向天空、廢土、星律怪物與自己的帳單。",
+        options: [
+          { label: "誠實回答", stat: "cha", diff: 10, reward: { san: 14, echo: [1, 1], exp: 16 }, fail: { san: -8 }, successText: "諮商亭安靜聽完，列印一張寫著「你不是問題本身」的紙。紙很薄，但還算暖。", failText: "諮商亭判定你狀況穩定。它可能也需要諮商。" },
+          { label: "查看它是否還連著資料庫", stat: "int", diff: 12, reward: { shard: [1, 2], exp: 20 }, fail: { sync: -8 }, successText: "資料庫只剩範本句。你下載了幾句，至少它們還願意假裝在乎。", failText: "資料庫回傳帳單紀錄。Diver 很貼心地沒有朗讀。" },
+          { label: "說「我很好」", stat: "con", diff: 7, reward: { san: 4, exp: 8 }, fail: {}, successText: "諮商亭接受你的答案。你們都知道這不是事實。", failText: "諮商亭接受你的答案。你們都知道這不是事實。" }
+        ]
+      },
+      supplier_warranty: {
+        name: "供應商的保固服務",
+        type: "供應商事件",
+        desc: "供應商賣給你一台「幾乎全新」的星律探測器。你問他保固多久。他說：「到你走出店門為止。我對自己很有信心。」",
+        options: [
+          { label: "要求延長保固到門外三公尺", stat: "cha", diff: 12, reward: { trust: [1, 2], credits: [25, 55], exp: 20 }, fail: { credits: [-20, -10] }, successText: "供應商被你的野心打動，保固延長到門外三公尺。這在本地已接近慈善。", failText: "他同意延長保固，然後把店門往你腳邊挪近。" },
+          { label: "當場測試", stat: "int", diff: 11, reward: { shard: [1, 3], scrap: [1, 2], exp: 22 }, fail: { sync: -10 }, successText: "探測器響了。供應商說那是正常聲音。Diver 說它聽起來像求救。", failText: "探測器當場冒煙。供應商稱之為熱身。" },
+          { label: "相信他，像個受害者", stat: "con", diff: 8, reward: { trust: [1, 1], exp: 10 }, fail: { san: -5 }, successText: "你選擇信任。供應商看起來短暫愧疚，像一個價格還沒標好的商品。", failText: "你相信了他。系統已新增教學條目：後悔。" }
+        ]
+      }
+    };
+
+    const SUPPLIES = [
+      { id: "first_aid_gel", cost: 30 },
+      { id: "white_noise_chip", cost: 42 },
+      { id: "sedative_mist", cost: 70 },
+      { id: "subflux_battery", cost: 86 },
+      { id: "beacon", cost: 95 },
+      { id: "crystal_pick", cost: 160 },
+      { id: "phase_glove", cost: 140 }
+    ];
+
+    const UPGRADES = {
+      damper: {
+        name: "Diver 阻尼器校準",
+        max: 5,
+        desc: "提高同步值上限，降低中繼站與潮噪造成的同步干擾。",
+        cost: (lv) => ({ credits: 120 + lv * 90, scrap: 3 + lv * 2, shard: 1 + lv })
+      },
+      medbay: {
+        name: "外勤醫療包擴充",
+        max: 5,
+        desc: "提高 HP 上限與自動補給效率。",
+        cost: (lv) => ({ credits: 110 + lv * 85, scrap: 4 + lv * 2, crystal: lv })
+      },
+      compass: {
+        name: "回響羅盤調校",
+        max: 5,
+        desc: "提高事件發現率、稀有敵人與殘響收益。",
+        cost: (lv) => ({ credits: 140 + lv * 100, echo: 2 + lv, shard: 1 + lv })
+      }
+    };
+
+    const createStats = { str: 6, dex: 6, con: 6, int: 6, per: 6, cha: 6 };
+    let createPoints = 10;
+    let createProtocol = "aegis";
+    let activeTab = "events";
+    let paused = false;
+    let tickTimer = null;
+    let saveTimer = 0;
+    let renderTimer = 0;
+    let eventUid = 1;
+
+    let state = freshState();
+
+    function freshState() {
+      return {
+        version: VERSION,
+        created: false,
+        name: "越盾者",
+        protocol: "aegis",
+        level: 1,
+        exp: 0,
+        expNext: 60,
+        baseStats: { str: 6, dex: 6, con: 6, int: 6, per: 6, cha: 6 },
+        bonusPoints: 0,
+        hp: 1,
+        sync: 1,
+        san: 100,
+        credits: 120,
+        resources: { shard: 0, echo: 0, crystal: 0, scrap: 0, trust: 0 },
+        inventory: {
+          starter_blade: 1,
+          patched_coat: 1,
+          old_diver: 1,
+          first_aid_gel: 4,
+          white_noise_chip: 2
+        },
+        equipment: { weapon: "starter_blade", armor: "patched_coat", module: "old_diver", charm: null },
+        currentMap: "shield_edge",
+        weather: "stable",
+        weatherRemaining: 120,
+        enemy: null,
+        explore: 0,
+        pendingEvents: [],
+        buffs: {},
+        upgrades: { damper: 0, medbay: 0, compass: 0 },
+        settings: { autoConsumables: true, autoSan: true, autoSave: true, strategy: "balanced", theme: { ...DEFAULT_THEME } },
+        records: { kills: {}, maps: {}, events: {}, deaths: 0, weather: {} },
+        weatherForecast: [],
+        forecastTarget: null,
+        flavorTick: 0,
+        startedAt: Date.now(),
+        lastSavedAt: null,
+        log: [],
+        battleLog: []
+      };
+    }
+
+    function normalizeState(raw) {
+      const base = freshState();
+      const merged = { ...base, ...raw };
+      merged.baseStats = { ...base.baseStats, ...(raw.baseStats || raw.stats || {}) };
+      merged.resources = { ...base.resources, ...(raw.resources || {}) };
+      merged.inventory = { ...base.inventory, ...(raw.inventory || {}) };
+      merged.equipment = { ...base.equipment, ...(raw.equipment || {}) };
+      merged.settings = { ...base.settings, ...(raw.settings || {}) };
+      merged.settings.theme = { ...DEFAULT_THEME, ...(raw.settings?.theme || {}) };
+      merged.records = {
+        kills: { ...(raw.records?.kills || {}) },
+        maps: { ...(raw.records?.maps || {}) },
+        events: { ...(raw.records?.events || {}) },
+        deaths: raw.records?.deaths || 0,
+        weather: { ...(raw.records?.weather || {}) }
+      };
+      merged.upgrades = { ...base.upgrades, ...(raw.upgrades || {}) };
+      merged.pendingEvents = Array.isArray(raw.pendingEvents) ? raw.pendingEvents : [];
+      merged.weatherForecast = Array.isArray(raw.weatherForecast) ? raw.weatherForecast.filter((id) => WEATHER[id]).slice(0, 6) : [];
+      merged.forecastTarget = MAPS[raw.forecastTarget] ? raw.forecastTarget : null;
+      merged.flavorTick = Number.isFinite(raw.flavorTick) ? raw.flavorTick : 0;
+      const oldLog = Array.isArray(raw.log) ? raw.log : [];
+      merged.log = oldLog.filter((entry) => entry?.type !== "combat").slice(-MAX_LOG);
+      merged.battleLog = Array.isArray(raw.battleLog)
+        ? raw.battleLog.slice(-MAX_BATTLE_LOG)
+        : oldLog.filter((entry) => entry?.type === "combat").slice(-MAX_BATTLE_LOG);
+      merged.buffs = raw.buffs || {};
+      if (!WEATHER[merged.weather]) merged.weather = "stable";
+      if (!MAPS[merged.currentMap]) merged.currentMap = "shield_edge";
+      return merged;
+    }
+
+    function getProtocol() {
+      return PROTOCOLS[state.protocol] || PROTOCOLS.aegis;
+    }
+
+    function itemDef(id) {
+      return ITEMS[id];
+    }
+
+    function getEquipStats() {
+      const total = { str: 0, dex: 0, con: 0, int: 0, per: 0, cha: 0, defense: 0, sync: 0, san: 0, hp: 0 };
+      for (const id of Object.values(state.equipment)) {
+        if (!id || !ITEMS[id]) continue;
+        const def = ITEMS[id];
+        if (def.stats) {
+          for (const [key, value] of Object.entries(def.stats)) total[key] = (total[key] || 0) + value;
+        }
+        if (def.defense) total.defense += def.defense;
+        if (def.sync) total.sync += def.sync;
+        if (def.san) total.san += def.san;
+        if (def.hp) total.hp += def.hp;
+      }
+      return total;
+    }
+
+    function getStats() {
+      const eq = getEquipStats();
+      const stats = {};
+      for (const key of Object.keys(STAT_META)) {
+        stats[key] = Math.max(1, (state.baseStats[key] || 0) + (eq[key] || 0));
+      }
+      return stats;
+    }
+
+    function derived() {
+      const stats = getStats();
+      const eq = getEquipStats();
+      const protocol = getProtocol().mods || {};
+      const upgradeHp = (state.upgrades.medbay || 0) * 10;
+      const upgradeSync = (state.upgrades.damper || 0) * 8;
+      const upgradeSan = (state.upgrades.compass || 0) * 3;
+      const maxHp = 68 + stats.con * 12 + state.level * 9 + (protocol.hp || 0) + (eq.hp || 0) + upgradeHp;
+      const maxSync = 34 + stats.int * 7 + stats.per * 3 + state.level * 5 + (protocol.sync || 0) + (eq.sync || 0) + upgradeSync;
+      const maxSan = 100 + stats.cha * 2 + stats.per + (protocol.san || 0) + (eq.san || 0) + upgradeSan;
+      const defense = Math.max(0, Math.floor(stats.con * 0.34 + state.level * 0.7 + (eq.defense || 0) + (protocol.defense || 0)));
+      const evasion = clamp(0.04 + stats.dex * 0.009 + stats.per * 0.004 + (state.settings.strategy === "conserve" ? 0.06 : 0), 0.03, 0.42);
+      const crit = clamp(0.04 + stats.per * 0.008 + stats.dex * 0.003, 0.04, 0.38);
+      const weapon = itemDef(state.equipment.weapon) || itemDef("starter_blade");
+      const weaponAvg = weapon?.damage ? (weapon.damage[0] + weapon.damage[1]) / 2 : 6;
+      const attack = weaponAvg + state.level * 1.4 + stats.str * 0.9 + stats.dex * 0.45;
+      const syncRegenBuff = state.buffs.sync_regen ? 1.55 : 1;
+      const syncRegen = (1.1 + stats.int * 0.08 + stats.per * 0.025 + (state.upgrades.damper || 0) * 0.12) * syncRegenBuff;
+      const sanRegen = 0.2 + stats.cha * 0.035 + (state.settings.strategy === "conserve" ? 0.22 : 0) + (state.buffs.calm ? 0.7 : 0);
+      return { stats, maxHp, maxSync, maxSan, defense, evasion, crit, attack, syncRegen, sanRegen, weapon };
+    }
+
+    function currentWeather() {
+      return { id: state.weather, ...(WEATHER[state.weather] || WEATHER.stable) };
+    }
+
+    function currentMap() {
+      return MAPS[state.currentMap] || MAPS.shield_edge;
+    }
+
+    function pickWeighted(entries) {
+      const total = entries.reduce((sum, entry) => sum + entry[1], 0);
+      let roll = Math.random() * total;
+      for (const entry of entries) {
+        roll -= entry[1];
+        if (roll <= 0) return entry[0];
+      }
+      return entries[entries.length - 1][0];
+    }
+
+    function rollWeather(mapId = state.currentMap) {
+      const map = MAPS[mapId] || MAPS.shield_edge;
+      const weatherId = pickWeighted(map.weather);
+      const def = WEATHER[weatherId] || WEATHER.stable;
+      return { id: weatherId, remaining: rollInt(def.duration[0], def.duration[1]) };
+    }
+
+    function addLog(type, text) {
+      const entry = { type, text, time: nowTime() };
+      const target = type === "combat" ? state.battleLog : state.log;
+      const max = type === "combat" ? MAX_BATTLE_LOG : MAX_LOG;
+      target.push(entry);
+      if (target.length > max) target.splice(0, target.length - max);
+      renderLogs();
+    }
+
+    function randomFrom(list) {
+      return list[rollInt(0, list.length - 1)];
+    }
+
+    function supplierLine() {
+      return randomFrom(SUPPLIER_QUOTES);
+    }
+
+    function maybeAmbientLog() {
+      if (state.pendingEvents.length >= 3 || state.enemy) return;
+      const d = derived();
+      if (currentMap().safe) {
+        if (chance(0.58)) addLog("system", randomFrom(SAFE_MESSAGES));
+        else addLog("system", supplierLine());
+        return;
+      }
+      const lowHp = state.hp <= d.maxHp * 0.45;
+      const lowSan = state.san <= d.maxSan * 0.55;
+      const lowSync = state.sync <= d.maxSync * 0.34;
+      if (lowHp || lowSan || lowSync || chance(0.42)) {
+        addLog("state", randomFrom(DIVER_MESSAGES));
+      }
+    }
+
+    function addResource(key, amount) {
+      if (!amount) return;
+      if (key === "credits") {
+        state.credits = Math.max(0, state.credits + amount);
+      } else if (RESOURCE_META[key]) {
+        state.resources[key] = Math.max(0, (state.resources[key] || 0) + amount);
+      }
+    }
+
+    function addItem(id, qty = 1, silent = false) {
+      if (RESOURCE_META[id] || id === "credits") {
+        addResource(id, qty);
+        return;
+      }
+      if (!ITEMS[id]) return;
+      state.inventory[id] = (state.inventory[id] || 0) + qty;
+      if (!silent) addLog("loot", `獲得 ${ITEMS[id].name} x${qty}`);
+    }
+
+    function removeItem(id, qty = 1) {
+      if ((state.inventory[id] || 0) < qty) return false;
+      state.inventory[id] -= qty;
+      if (state.inventory[id] <= 0) delete state.inventory[id];
+      return true;
+    }
+
+    function applyBundle(bundle = {}, success = true) {
+      const resultText = [];
+      for (const [key, value] of Object.entries(bundle)) {
+        if (key === "hpPct") {
+          const d = derived();
+          state.hp = clamp(state.hp + d.maxHp * value, 0, d.maxHp);
+          resultText.push(`${value >= 0 ? "HP +" : "HP "}${Math.round(value * 100)}%`);
+        } else if (key === "hp") {
+          const d = derived();
+          state.hp = clamp(state.hp + value, 0, d.maxHp);
+          resultText.push(`HP ${value >= 0 ? "+" : ""}${Math.round(value)}`);
+        } else if (key === "sync") {
+          const d = derived();
+          state.sync = clamp(state.sync + value, 0, d.maxSync);
+          resultText.push(`同步 ${value >= 0 ? "+" : ""}${Math.round(value)}`);
+        } else if (key === "san") {
+          const d = derived();
+          state.san = clamp(state.san + value, 0, d.maxSan);
+          resultText.push(`San ${value >= 0 ? "+" : ""}${Math.round(value)}`);
+        } else if (key === "exp") {
+          gainExp(value);
+          resultText.push(`EXP +${value}`);
+        } else if (key === "mapReturn" && value) {
+          retreat("被迫撤回護盾外緣", false);
+        } else if (RESOURCE_META[key] || key === "credits") {
+          const amount = Array.isArray(value) ? rollInt(value[0], value[1]) : value;
+          addResource(key, amount);
+          resultText.push(`${RESOURCE_META[key]?.name || "能源彈"} ${amount >= 0 ? "+" : ""}${amount}`);
+        } else if (ITEMS[key]) {
+          const amount = Array.isArray(value) ? rollInt(value[0], value[1]) : value;
+          if (amount > 0) addItem(key, amount, true);
+          resultText.push(`${ITEMS[key].name} x${amount}`);
+        }
+      }
+      if (success && resultText.length) addLog("loot", resultText.join("，"));
+    }
+
+    function canPay(cost = {}) {
+      for (const [key, value] of Object.entries(cost)) {
+        if (key === "credits") {
+          if (state.credits < value) return false;
+        } else if (RESOURCE_META[key]) {
+          if ((state.resources[key] || 0) < value) return false;
+        } else if ((state.inventory[key] || 0) < value) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function pay(cost = {}) {
+      if (!canPay(cost)) return false;
+      for (const [key, value] of Object.entries(cost)) {
+        if (key === "credits") state.credits -= value;
+        else if (RESOURCE_META[key]) state.resources[key] -= value;
+        else removeItem(key, value);
+      }
+      return true;
+    }
+
+    function gainExp(amount) {
+      if (!amount) return;
+      state.exp += Math.max(0, Math.floor(amount));
+      while (state.exp >= state.expNext) {
+        state.exp -= state.expNext;
+        state.level += 1;
+        state.bonusPoints += state.level % 2 === 0 ? 1 : 0;
+        state.expNext = Math.floor(60 * Math.pow(1.22, state.level - 1) + state.level * 18);
+        const d = derived();
+        state.hp = d.maxHp;
+        state.sync = d.maxSync;
+        state.san = Math.min(d.maxSan, state.san + 20);
+        addLog("system", `等級提升至 ${state.level}。${state.bonusPoints ? "獲得 1 點能力校準。" : "狀態已回復。"}`);
+      }
+    }
+
+    function allocateBonus(stat) {
+      if (!state.bonusPoints || !STAT_META[stat]) return;
+      state.baseStats[stat] += 1;
+      state.bonusPoints -= 1;
+      addLog("system", `${STAT_META[stat].name} 提升至 ${state.baseStats[stat]}。`);
+      syncCaps();
+      renderAll();
+    }
+
+    function syncCaps() {
+      const d = derived();
+      state.hp = clamp(state.hp, 0, d.maxHp);
+      state.sync = clamp(state.sync, 0, d.maxSync);
+      state.san = clamp(state.san, 0, d.maxSan);
+    }
+
+    function spawnEnemy() {
+      const map = currentMap();
+      if (map.safe || !map.monsters.length) return;
+      const weather = currentWeather();
+      let table = map.monsters.slice();
+      if (weather.rare > 1.2 && chance(0.08 * weather.rare)) {
+        table = table.map(([id, weight]) => [id, ENEMIES[id].level >= state.level + 3 ? weight * 1.6 : weight]);
+      }
+      const id = pickWeighted(table);
+      const base = ENEMIES[id];
+      const levelGap = Math.max(0, state.level - base.level);
+      const scale = 1 + levelGap * 0.08 + (map.danger === "red" ? 0.12 : map.danger === "purple" ? 0.06 : 0);
+      state.enemy = {
+        id,
+        name: base.name,
+        type: base.type,
+        level: Math.max(base.level, Math.floor(base.level + levelGap * 0.45)),
+        maxHp: Math.floor(base.hp * scale),
+        hp: Math.floor(base.hp * scale),
+        atkHp: Math.ceil(base.atkHp * scale),
+        atkSan: Math.ceil(base.atkSan * scale),
+        atkSync: Math.ceil(base.atkSync * scale),
+        defense: Math.ceil(base.defense * scale),
+        evasion: clamp(base.evasion + levelGap * 0.002, 0.02, 0.38),
+        exp: Math.ceil(base.exp * scale),
+        color: base.color
+      };
+      addLog("combat", `遭遇 ${base.name}。`);
+    }
+
+    function playerAttack() {
+      if (!state.enemy) return;
+      const d = derived();
+      const enemy = state.enemy;
+      const weather = currentWeather();
+      if (state.san <= 10 && chance(0.22)) {
+        addLog("state", "潮噪壓過聽覺，你錯過了一次攻擊。");
+        return;
+      }
+      const hitRate = clamp(0.82 + d.stats.dex * 0.008 + d.stats.per * 0.004 - enemy.evasion, 0.18, 0.96);
+      if (!chance(hitRate)) {
+        addLog("combat", `${enemy.name} 避開了攻擊。`);
+        return;
+      }
+      const weapon = d.weapon || itemDef("starter_blade");
+      const baseDamage = weapon.damage ? rollInt(weapon.damage[0], weapon.damage[1]) : rollInt(4, 8);
+      let damage = baseDamage + d.stats.str * 0.75 + d.stats.dex * 0.4 + state.level * 1.2 - enemy.defense * 0.55;
+      let note = "";
+      if (state.settings.strategy === "conserve") damage *= 0.78;
+      if (state.settings.strategy === "phase_blade" && !weather.skillLock && state.sync >= 8) {
+        state.sync -= 8;
+        damage += 9 + d.stats.int * 1.2 + d.stats.per * 0.45;
+        note = " 態轉換刃展開。";
+      }
+      if (state.settings.strategy === "signal_hack" && !weather.skillLock && state.sync >= 10) {
+        state.sync -= 10;
+        const effective = enemy.type === "機械敵人" || enemy.name.includes("歸一教");
+        damage += effective ? 14 + d.stats.int * 1.4 : 4 + d.stats.int * 0.35;
+        if (effective && chance(0.35 + d.stats.int * 0.012)) {
+          enemy.atkHp = Math.max(1, enemy.atkHp - 2);
+          enemy.atkSync = Math.max(0, enemy.atkSync - 2);
+          note = " 訊號解析干擾敵方鏈路。";
+        } else {
+          note = " 訊號解析取得局部讀數。";
+        }
+      }
+      if (state.settings.strategy === "resonance_hymn" && !weather.skillLock && state.sync >= 12) {
+        state.sync -= 12;
+        const effective = enemy.type === "星律生物" || enemy.type === "潮噪污染體";
+        damage += effective ? 16 + d.stats.cha * 1.2 + d.stats.per * 0.8 : 5 + d.stats.cha * 0.4;
+        state.san = clamp(state.san + (effective ? 3 : 1), 0, d.maxSan);
+        note = " 低聲調律壓住了雜訊。";
+      }
+      if (chance(d.crit)) {
+        damage *= 1.65;
+        note += " 暴擊。";
+      }
+      damage = Math.max(1, Math.floor(damage));
+      enemy.hp = Math.max(0, enemy.hp - damage);
+      addLog("combat", `你對 ${enemy.name} 造成 ${damage} 傷害。${note}`);
+      if (enemy.hp <= 0) killEnemy();
+    }
+
+    function enemyAttack() {
+      if (!state.enemy) return;
+      const d = derived();
+      const enemy = state.enemy;
+      const weather = currentWeather();
+      if (chance(d.evasion)) {
+        addLog("combat", `你避開了 ${enemy.name} 的攻擊。`);
+        return;
+      }
+      const hpDamage = Math.max(0, Math.floor((enemy.atkHp * weather.hpDamage) - d.defense * 0.42));
+      const sanDamage = Math.max(0, Math.floor(enemy.atkSan * weather.sanDamage));
+      const syncDamage = Math.max(0, Math.floor(enemy.atkSync + currentMap().syncNoise * 8 - (state.upgrades.damper || 0)));
+      if (hpDamage) state.hp = Math.max(0, state.hp - hpDamage);
+      if (sanDamage) state.san = Math.max(0, state.san - sanDamage);
+      if (syncDamage) state.sync = Math.max(0, state.sync - syncDamage);
+      const parts = [];
+      if (hpDamage) parts.push(`HP -${hpDamage}`);
+      if (sanDamage) parts.push(`San -${sanDamage}`);
+      if (syncDamage) parts.push(`同步 -${syncDamage}`);
+      addLog("combat", `${enemy.name} 反擊：${parts.join("，") || "未造成有效傷害"}。`);
+      if (state.hp <= 0) retreat("生命維持警報觸發，外勤隊把你拖回護盾邊界", true);
+    }
+
+    function killEnemy() {
+      const enemy = state.enemy;
+      const base = ENEMIES[enemy.id];
+      state.enemy = null;
+      state.explore = Math.max(0, state.explore - 0.35);
+      state.records.kills[enemy.id] = (state.records.kills[enemy.id] || 0) + 1;
+      state.records.maps[state.currentMap] = (state.records.maps[state.currentMap] || 0) + 1;
+      addLog("combat", `${enemy.name} 被擊倒。`);
+      gainExp(enemy.exp);
+      const d = derived();
+      const weather = currentWeather();
+      const protocol = getProtocol().mods || {};
+      const creditBonus = 1 + (protocol.credits || 0);
+      const resourceBonus = 1 + (protocol.resource || 0) + (state.upgrades.compass || 0) * 0.03;
+      const credits = Math.floor(rollInt(base.credits[0], base.credits[1]) * creditBonus);
+      addResource("credits", credits);
+      if (credits) addLog("loot", `回收能源彈 +${credits}`);
+      for (const drop of base.drops || []) {
+        const dropChance = drop.chance * weather.resource * resourceBonus * (1 + d.stats.per * 0.006);
+        if (chance(dropChance)) {
+          const qty = drop.qty ? rollInt(drop.qty[0], drop.qty[1]) : 1;
+          if (RESOURCE_META[drop.id]) {
+            addResource(drop.id, qty);
+            addLog("loot", `獲得 ${RESOURCE_META[drop.id].name} +${qty}`);
+          } else {
+            addItem(drop.id, qty);
+          }
+        }
+      }
+      syncCaps();
+    }
+
+    function retreat(reason, countDeath) {
+      const d = derived();
+      addLog("state", `${reason}。`);
+      state.records.deaths += countDeath ? 1 : 0;
+      state.currentMap = "astra_maris";
+      state.enemy = null;
+      state.pendingEvents = [];
+      state.explore = 0;
+      state.hp = Math.max(1, Math.floor(d.maxHp * 0.55));
+      state.sync = Math.max(0, Math.floor(d.maxSync * 0.4));
+      state.san = Math.max(10, Math.floor(d.maxSan * 0.45));
+      const w = rollWeather(state.currentMap);
+      state.weather = w.id;
+      state.weatherRemaining = w.remaining;
+    }
+
+    function tickWeather() {
+      state.weatherRemaining -= 1;
+      if (state.weatherRemaining <= 0) {
+        const old = state.weather;
+        const predicted = (!state.forecastTarget || state.forecastTarget === state.currentMap) && state.weatherForecast.length ? state.weatherForecast.shift() : null;
+        const rolled = predicted ? { id: predicted, remaining: rollInt(WEATHER[predicted].duration[0], WEATHER[predicted].duration[1]) } : rollWeather();
+        state.weather = rolled.id;
+        state.weatherRemaining = rolled.remaining;
+        state.records.weather[state.weather] = (state.records.weather[state.weather] || 0) + 1;
+        addLog("weather", `天氣由 ${WEATHER[old]?.name || "未知"} 轉為 ${currentWeather().name}。${currentWeather().desc}`);
+      }
+    }
+
+    function tickRegen() {
+      const d = derived();
+      const weather = currentWeather();
+      const map = currentMap();
+      state.hp = clamp(state.hp + Math.max(0.15, d.stats.con * 0.045), 0, d.maxHp);
+      state.sync = clamp(state.sync + d.syncRegen * weather.syncRegen, 0, d.maxSync);
+      let sanDelta = d.sanRegen + weather.sanDrift - map.sanPressure;
+      if (state.buffs.mist) sanDelta += 0.75;
+      state.san = clamp(state.san + sanDelta, 0, d.maxSan);
+      for (const key of Object.keys(state.buffs)) {
+        state.buffs[key] -= 1;
+        if (state.buffs[key] <= 0) delete state.buffs[key];
+      }
+      if (state.san <= 0 && chance(0.08)) {
+        const effects = [
+          () => { state.sync = 0; addLog("state", "同步短路：Diver 介面歸零。"); },
+          () => { state.explore = Math.max(0, state.explore - 0.35); addLog("state", "盲目遊蕩：尋路進度倒退。"); },
+          () => { if (state.pendingEvents.length) { state.pendingEvents.shift(); addLog("state", "潮噪症：你錯過了一個未處理事件。"); } },
+          () => { state.hp = Math.max(1, state.hp - Math.floor(d.maxHp * 0.08)); addLog("state", "晶化刺痛：HP 持續流失。"); }
+        ];
+        effects[rollInt(0, effects.length - 1)]();
+      }
+    }
+
+    function tickExplore() {
+      if (state.enemy) return;
+      const d = derived();
+      const map = currentMap();
+      const weather = currentWeather();
+      if (map.safe) {
+        state.explore = 0;
+        const eventRate = map.eventBase * weather.event * (1 + d.stats.per * 0.006 + (state.upgrades.compass || 0) * 0.02);
+        if (map.events.length && state.pendingEvents.length < 2 && chance(eventRate)) spawnEvent();
+        for (const event of state.pendingEvents) {
+          event.expires -= 1;
+        }
+        const expired = state.pendingEvents.filter((event) => event.expires <= 0);
+        if (expired.length) {
+          state.pendingEvents = state.pendingEvents.filter((event) => event.expires > 0);
+          for (const event of expired) addLog("event", `${EVENTS[event.eventId]?.name || "事件"} 被亞斯特拉的日常噪音吞掉。`);
+        }
+        return;
+      }
+      const speed = map.encounterBase * weather.encounter * (1 + d.stats.per * 0.01 + d.stats.dex * 0.005);
+      state.explore += speed;
+      if (state.settings.strategy === "conserve") state.explore *= 0.995;
+      if (state.explore >= 1) {
+        state.explore = 0;
+        spawnEnemy();
+      }
+      const eventRate = map.eventBase * weather.event * (1 + d.stats.per * 0.012 + (getProtocol().mods.event || 0) + (state.upgrades.compass || 0) * 0.04);
+      if (state.pendingEvents.length < 3 && chance(eventRate)) spawnEvent();
+      for (const event of state.pendingEvents) {
+        event.expires -= 1;
+      }
+      const expired = state.pendingEvents.filter((event) => event.expires <= 0);
+      if (expired.length) {
+        state.pendingEvents = state.pendingEvents.filter((event) => event.expires > 0);
+        for (const event of expired) addLog("event", `${EVENTS[event.eventId]?.name || "事件"} 被外勤路線拋在身後。`);
+      }
+    }
+
+    function spawnEvent() {
+      const map = currentMap();
+      const candidates = map.events.filter((id) => !state.pendingEvents.some((event) => event.eventId === id));
+      if (!candidates.length) return;
+      const id = candidates[rollInt(0, candidates.length - 1)];
+      state.pendingEvents.push({ uid: eventUid++, eventId: id, expires: 120 });
+      addLog("event", `事件觸發：${EVENTS[id].name}。`);
+    }
+
+    function resolveEvent(uid, optionIndex) {
+      const pending = state.pendingEvents.find((event) => event.uid === uid);
+      if (!pending) return;
+      const event = EVENTS[pending.eventId];
+      const option = event.options[optionIndex];
+      if (!event || !option) return;
+      if (option.cost && !pay(option.cost)) {
+        addLog("system", "資源不足，無法採取該行動。");
+        return;
+      }
+      if (option.needsItem && !state.inventory[option.needsItem]) {
+        addLog("system", `缺少 ${ITEMS[option.needsItem].name}。`);
+        return;
+      }
+      if (option.needsTrust && (state.resources.trust || 0) < option.needsTrust) {
+        addLog("system", "供應商信任不足，支援沒有回應。");
+        return;
+      }
+      const d = derived();
+      const stat = d.stats[option.stat] || 6;
+      const sanMod = state.san <= 10 ? -0.16 : state.san <= 40 ? -0.08 : state.san >= d.maxSan * 0.7 ? 0.04 : 0;
+      const chanceValue = clamp(0.28 + stat * 0.038 + state.level * 0.012 - option.diff * 0.025 + sanMod + (getProtocol().mods.event || 0), 0.05, 0.94);
+      const success = chance(chanceValue);
+      state.pendingEvents = state.pendingEvents.filter((eventCard) => eventCard.uid !== uid);
+      state.records.events[pending.eventId] = (state.records.events[pending.eventId] || 0) + 1;
+      if (success) {
+        addLog("event", `${event.name}：${option.label} 成功。`);
+        if (option.successText) addLog("event", option.successText);
+        applyBundle(option.reward, true);
+      } else {
+        addLog("event", `${event.name}：${option.label} 失敗。`);
+        if (option.failText) addLog("event", option.failText);
+        applyBundle(option.fail, false);
+      }
+      syncCaps();
+      renderAll();
+    }
+
+    function eventChanceText(option) {
+      const d = derived();
+      const stat = d.stats[option.stat] || 6;
+      const sanMod = state.san <= 10 ? -0.16 : state.san <= 40 ? -0.08 : state.san >= d.maxSan * 0.7 ? 0.04 : 0;
+      const value = clamp(0.28 + stat * 0.038 + state.level * 0.012 - option.diff * 0.025 + sanMod + (getProtocol().mods.event || 0), 0.05, 0.94);
+      return `${STAT_META[option.stat]?.short || ""} ${Math.round(value * 100)}%`;
+    }
+
+    function useItem(id) {
+      if (!ITEMS[id] || !state.inventory[id]) return;
+      const def = ITEMS[id];
+      const d = derived();
+      if (def.use === "heal") {
+        removeItem(id, 1);
+        const amount = Math.floor(d.maxHp * 0.36 + d.stats.con * 1.4 + (state.upgrades.medbay || 0) * 8);
+        state.hp = clamp(state.hp + amount, 0, d.maxHp);
+        addLog("state", `使用 ${def.name}，HP +${amount}。`);
+      } else if (def.use === "san") {
+        removeItem(id, 1);
+        const amount = Math.floor(18 + d.stats.cha * 0.9);
+        state.san = clamp(state.san + amount, 0, d.maxSan);
+        state.buffs.calm = Math.max(state.buffs.calm || 0, 45);
+        addLog("state", `使用 ${def.name}，San +${amount}。`);
+      } else if (def.use === "mist") {
+        removeItem(id, 1);
+        state.buffs.mist = Math.max(state.buffs.mist || 0, 90);
+        addLog("state", `使用 ${def.name}，San 下降受到抑制。`);
+      } else if (def.use === "sync_regen") {
+        removeItem(id, 1);
+        state.buffs.sync_regen = Math.max(state.buffs.sync_regen || 0, 80);
+        addLog("state", `使用 ${def.name}，同步回復速度提高。`);
+      } else if (def.use === "beacon") {
+        removeItem(id, 1);
+        state.explore = Math.min(0.96, state.explore + 0.55);
+        if (chance(0.35 + getStats().per * 0.01)) spawnEvent();
+        addLog("state", `使用 ${def.name}，搜索範圍擴大。`);
+      }
+      renderAll();
+    }
+
+    function autoUseConsumables() {
+      if (!state.settings.autoConsumables) return;
+      const d = derived();
+      if (state.hp / d.maxHp < 0.34 && state.inventory.first_aid_gel) useItem("first_aid_gel");
+      if (state.settings.autoSan && state.san / d.maxSan < 0.32 && state.inventory.white_noise_chip) useItem("white_noise_chip");
+    }
+
+    function equipItem(id) {
+      const def = ITEMS[id];
+      if (!def || def.type !== "equipment" || !state.inventory[id]) return;
+      state.equipment[def.slot] = id;
+      syncCaps();
+      addLog("system", `已裝備 ${def.name}。`);
+      renderAll();
+    }
+
+    function salvageItem(id) {
+      const def = ITEMS[id];
+      if (!def || !state.inventory[id]) return;
+      if (Object.values(state.equipment).includes(id)) {
+        addLog("system", "正在裝備的物品不能拆解。");
+        return;
+      }
+      removeItem(id, 1);
+      const scrap = Math.max(1, Math.floor((def.value || 20) / 55));
+      addResource("scrap", scrap);
+      if (def.rarity === "星律" || def.rarity === "歌劇院") addResource("echo", 1);
+      addLog("loot", `拆解 ${def.name}，獲得戰前零件 +${scrap}。`);
+      renderAll();
+    }
+
+    function sellItem(id) {
+      const def = ITEMS[id];
+      if (!def || !state.inventory[id]) return;
+      if (Object.values(state.equipment).includes(id)) {
+        addLog("system", "正在裝備的物品不能販售。");
+        return;
+      }
+      removeItem(id, 1);
+      const value = Math.max(1, Math.floor((def.value || 10) * 0.45));
+      addResource("credits", value);
+      addLog("loot", `交給供應商處理 ${def.name}，能源彈 +${value}。`);
+      if (chance(0.45)) addLog("system", supplierLine());
+      renderAll();
+    }
+
+    function buySupply(id) {
+      const supply = SUPPLIES.find((entry) => entry.id === id);
+      if (!supply) return;
+      if (state.credits < supply.cost) {
+        addLog("system", "能源彈不足。");
+        return;
+      }
+      state.credits -= supply.cost;
+      addItem(id, 1);
+      if (chance(0.42)) addLog("system", supplierLine());
+      renderAll();
+    }
+
+    function buyUpgrade(id) {
+      const upgrade = UPGRADES[id];
+      if (!upgrade) return;
+      const lv = state.upgrades[id] || 0;
+      if (lv >= upgrade.max) return;
+      const cost = upgrade.cost(lv);
+      if (!pay(cost)) {
+        addLog("system", "整備素材不足。");
+        return;
+      }
+      state.upgrades[id] = lv + 1;
+      syncCaps();
+      addLog("system", `${upgrade.name} 提升至 ${state.upgrades[id]}。`);
+      renderAll();
+    }
+
+    function changeMap(id) {
+      if (!MAPS[id]) return;
+      if (state.level < MAPS[id].unlock) {
+        addLog("system", `${MAPS[id].name} 需要等級 ${MAPS[id].unlock}。`);
+        return;
+      }
+      if (state.currentMap === id) return;
+      if (state.pendingEvents.length) {
+        addLog("event", "未處理事件因變更路線而錯過。");
+      }
+      state.currentMap = id;
+      state.pendingEvents = [];
+      state.enemy = null;
+      state.explore = 0;
+      if (state.forecastTarget && state.forecastTarget !== id) {
+        state.weatherForecast = [];
+        state.forecastTarget = null;
+      }
+      const weather = rollWeather(id);
+      state.weather = weather.id;
+      state.weatherRemaining = weather.remaining;
+      addLog("system", `外勤路線切換至 ${MAPS[id].name}。`);
+      addLog("weather", `目前天氣：${currentWeather().name}。`);
+      renderAll();
+    }
+
+    function applyTheme() {
+      const theme = { ...DEFAULT_THEME, ...(state.settings.theme || {}) };
+      const root = document.documentElement;
+      root.style.setProperty("--accent", theme.accent);
+      root.style.setProperty("--accent-2", theme.accent2);
+      root.style.setProperty("--gold", theme.gold);
+      root.style.setProperty("--bg", theme.bg);
+      root.style.setProperty("--panel", theme.panel);
+    }
+
+    function setThemeColor(key, value) {
+      if (!DEFAULT_THEME[key]) return;
+      state.settings.theme = { ...DEFAULT_THEME, ...(state.settings.theme || {}), [key]: value };
+      applyTheme();
+    }
+
+    function resetTheme() {
+      state.settings.theme = { ...DEFAULT_THEME };
+      applyTheme();
+      addLog("system", "介面色彩已重設。");
+      renderAll(true);
+    }
+
+    function restInAstraMaris() {
+      if (state.currentMap !== "astra_maris") {
+        addLog("system", "需要回到亞斯特拉．馬里斯才能安全休息。");
+        return;
+      }
+      const cost = Math.max(30, 60 + state.level * 8);
+      if (!pay({ credits: cost })) {
+        addLog("system", `能源彈不足，休息需要 ${cost}。`);
+        return;
+      }
+      const d = derived();
+      state.hp = d.maxHp;
+      state.sync = d.maxSync;
+      state.san = d.maxSan;
+      addLog("system", `你在亞斯特拉．馬里斯休息，供應商替 Diver 做了完整校準。能源彈 -${cost}。`);
+      addLog("system", "供應商：「你看起來好多了。至少帳面上是。」");
+      renderAll();
+    }
+
+    function buyWeatherForecast() {
+      if (state.currentMap !== "astra_maris") {
+        addLog("system", "準確天氣預報需要回城接入亞斯特拉．馬里斯的觀測資料。");
+        return;
+      }
+      const cost = { credits: 35, shard: 1 };
+      if (!pay(cost)) {
+        addLog("system", "查看準確天氣預報需要能源彈 35 與星律碎片 1。");
+        return;
+      }
+      const targetMap = $("forecast-target")?.value || "shield_edge";
+      const forecast = [];
+      for (let i = 0; i < 5; i += 1) {
+        forecast.push(rollWeather(targetMap).id);
+      }
+      state.weatherForecast = forecast;
+      state.forecastTarget = targetMap;
+      addLog("weather", `供應商完成 ${MAPS[targetMap].name} 的天氣預報：${forecast.map((id) => WEATHER[id].name).join(" → ")}。`);
+      addLog("system", "供應商：「準確預報比較貴，因為它會先傷害你的希望。」");
+      renderAll();
+    }
+
+    function gameTick() {
+      if (!state.created || paused) return;
+      tickWeather();
+      tickRegen();
+      tickExplore();
+      autoUseConsumables();
+      state.flavorTick = (state.flavorTick || 0) + 1;
+      if (state.flavorTick >= 24) {
+        state.flavorTick = 0;
+        maybeAmbientLog();
+      }
+      if (state.enemy) {
+        playerAttack();
+        if (state.enemy) enemyAttack();
+      }
+      syncCaps();
+      saveTimer += 1;
+      renderTimer += 1;
+      if (state.settings.autoSave && saveTimer >= 30) {
+        saveGame(true);
+        saveTimer = 0;
+      }
+      if (renderTimer >= 1) {
+        renderAll();
+        renderTimer = 0;
+      }
+    }
+
+    function startTimers() {
+      if (tickTimer) clearInterval(tickTimer);
+      tickTimer = setInterval(gameTick, TICK_MS);
+    }
+
+    function startNewGame() {
+      if (createPoints > 0) {
+        addLog("system", "仍有未分配能力點。");
+        return;
+      }
+      state = freshState();
+      state.created = true;
+      state.name = $("create-name").value.trim() || "越盾者";
+      state.protocol = createProtocol;
+      state.baseStats = { ...createStats };
+      const protocol = PROTOCOLS[createProtocol];
+      for (const [id, qty] of Object.entries(protocol.start || {})) {
+        state.inventory[id] = (state.inventory[id] || 0) + qty;
+      }
+      const weather = rollWeather(state.currentMap);
+      state.weather = weather.id;
+      state.weatherRemaining = weather.remaining;
+      const d = derived();
+      state.hp = d.maxHp;
+      state.sync = d.maxSync;
+      state.san = d.maxSan;
+      state.log = [];
+      state.battleLog = [];
+      addLog("system", `${state.name} 已登記為越盾者，${protocol.name} 啟動。`);
+      addLog("weather", `護盾外天氣：${currentWeather().name}。${currentWeather().desc}`);
+      $("creation-modal").classList.remove("show");
+      startTimers();
+      renderAll();
+      saveGame(true);
+    }
+
+    function saveGame(silent = false) {
+      if (!state.created) return;
+      state.version = VERSION;
+      state.lastSavedAt = Date.now();
+      localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+      if (!silent) addLog("system", "進度已儲存至本機瀏覽器。");
+    }
+
+    function loadGame() {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) {
+        addLog("system", "沒有可讀取的 Beyond the Shield 紀錄。");
+        return false;
+      }
+      try {
+        state = normalizeState(JSON.parse(raw));
+        state.created = true;
+        syncCaps();
+        $("creation-modal").classList.remove("show");
+        startTimers();
+        addLog("system", "已讀取 Beyond the Shield 紀錄。");
+        renderAll();
+        return true;
+      } catch (error) {
+        console.error(error);
+        addLog("system", "讀取失敗：存檔格式無法解析。");
+        return false;
+      }
+    }
+
+    function resetToCreation() {
+      if (state.created && !confirm("建立新紀錄會覆蓋目前自動存檔。確定要回到登記畫面？")) return;
+      paused = false;
+      state = freshState();
+      for (const key of Object.keys(createStats)) createStats[key] = 6;
+      createPoints = 10;
+      createProtocol = "aegis";
+      $("creation-modal").classList.add("show");
+      renderCreation();
+      renderAll();
+    }
+
+    function renderCreation() {
+      $("create-points").textContent = createPoints;
+      $("create-stats").innerHTML = Object.entries(STAT_META).map(([key, meta]) => `
+        <div class="create-stat-row">
+          <span>${meta.name} <span class="text-muted">${meta.short}</span></span>
+          <strong>${createStats[key]}</strong>
+          <button data-create-dec="${key}" ${createStats[key] <= 6 ? "disabled" : ""}>-</button>
+          <button data-create-inc="${key}" ${createPoints <= 0 ? "disabled" : ""}>+</button>
+        </div>
+      `).join("");
+      $("protocols").innerHTML = Object.entries(PROTOCOLS).map(([key, protocol]) => `
+        <div class="protocol ${key === createProtocol ? "active" : ""}" data-protocol="${key}">
+          <strong>${protocol.name}</strong>
+          <span>${protocol.desc}</span>
+        </div>
+      `).join("");
+      $("create-start").disabled = createPoints > 0;
+    }
+
+    function renderAll(forceTab = false) {
+      applyTheme();
+      renderStatus();
+      renderMapSelect();
+      renderEnemy();
+      renderTab(forceTab);
+      renderLogs();
+    }
+
+    function renderStatus() {
+      const d = derived();
+      const stats = d.stats;
+      $("ui-name").textContent = state.created ? state.name : "---";
+      $("ui-protocol").textContent = state.created ? getProtocol().name : "未啟動";
+      $("ui-level").textContent = state.level;
+      $("ui-exp-next").textContent = fmt(state.expNext);
+      $("ui-map").textContent = currentMap().name;
+      $("bar-hp").style.width = `${pct(state.hp, d.maxHp)}%`;
+      $("bar-sync").style.width = `${pct(state.sync, d.maxSync)}%`;
+      $("bar-san").style.width = `${pct(state.san, d.maxSan)}%`;
+      $("bar-exp").style.width = `${pct(state.exp, state.expNext)}%`;
+      $("txt-hp").textContent = `${Math.floor(state.hp)} / ${Math.floor(d.maxHp)}`;
+      $("txt-sync").textContent = `${Math.floor(state.sync)} / ${Math.floor(d.maxSync)}`;
+      $("txt-san").textContent = `${Math.floor(state.san)} / ${Math.floor(d.maxSan)}`;
+      $("txt-exp").textContent = `${Math.floor(pct(state.exp, state.expNext))}%`;
+      $("ui-san-state").textContent = sanState(d);
+      $("stats-grid").innerHTML = Object.entries(STAT_META).map(([key, meta]) => `
+        <div class="stat-box">
+          <div class="stat-label">${meta.name} ${meta.short}</div>
+          <div class="stat-value">${stats[key]}</div>
+          ${state.bonusPoints ? `<button class="stat-plus" data-bonus="${key}" title="${meta.name} +1">+</button>` : ""}
+        </div>
+      `).join("");
+      const alert = $("level-up-alert");
+      alert.classList.toggle("show", state.bonusPoints > 0);
+      alert.textContent = state.bonusPoints > 0 ? `能力校準點 ${state.bonusPoints}：請在能力值旁按 + 分配。` : "";
+      const resources = [
+        ["credits", state.credits],
+        ["shard", state.resources.shard || 0],
+        ["echo", state.resources.echo || 0],
+        ["crystal", state.resources.crystal || 0],
+        ["scrap", state.resources.scrap || 0],
+        ["trust", state.resources.trust || 0]
+      ];
+      $("resource-grid").innerHTML = resources.map(([key, value]) => `
+        <div class="resource-box">
+          <div>${RESOURCE_META[key].name}</div>
+          <div>${fmt(value)}</div>
+        </div>
+      `).join("");
+      $("strategy-select").value = state.settings.strategy;
+      $("ui-clock").textContent = nowTime();
+    }
+
+    function sanState(d = derived()) {
+      const ratio = state.san / d.maxSan;
+      if (ratio > 0.7) return "穩定";
+      if (ratio > 0.4) return "潮噪";
+      if (ratio > 0.1) return "失真";
+      return "崩潰";
+    }
+
+    function renderMapSelect() {
+      const select = $("map-select");
+      const current = currentMap();
+      if (!select) return;
+      const valueBefore = select.value;
+      select.innerHTML = Object.entries(MAPS).map(([id, map]) => {
+        const locked = state.level < map.unlock;
+        const danger = map.danger === "city" ? "城內" : map.danger === "red" ? "紅" : map.danger === "purple" ? "紫" : "藍";
+        const suffix = locked ? ` / Lv.${map.unlock} 開放` : map.danger === "city" ? " / 安全區" : ` / 危險度${danger}`;
+        return `<option value="${id}" ${locked ? "disabled" : ""}>${map.name}${suffix}</option>`;
+      }).join("");
+      select.value = MAPS[state.currentMap] ? state.currentMap : valueBefore;
+      $("map-select-desc").textContent = `${current.name}：${current.desc}`;
+    }
+
+    function renderEnemy() {
+      if (!state.enemy) {
+        $("enemy-name").textContent = "搜索中";
+        $("enemy-meta").textContent = `${currentMap().name} / ${currentWeather().name}`;
+        $("bar-enemy").style.width = `${Math.floor(state.explore * 100)}%`;
+        $("txt-enemy").textContent = `尋敵 ${Math.floor(state.explore * 100)}%`;
+        return;
+      }
+      const enemy = state.enemy;
+      $("enemy-name").textContent = enemy.name;
+      $("enemy-meta").textContent = `Lv.${enemy.level} / ${enemy.type}`;
+      $("bar-enemy").style.width = `${pct(enemy.hp, enemy.maxHp)}%`;
+      $("txt-enemy").textContent = `${Math.max(0, Math.floor(enemy.hp))} / ${enemy.maxHp}`;
+    }
+
+    function renderEvents() {
+      if (!state.pendingEvents.length) {
+        $("tab-content").innerHTML = `<div class="empty">目前沒有未處理事件。</div>`;
+        return;
+      }
+      $("tab-content").innerHTML = state.pendingEvents.map((pending) => {
+        const event = EVENTS[pending.eventId];
+        return `
+          <div class="event-card">
+            <div class="event-head"><span>${event.name}</span><span>${pending.expires}s</span></div>
+            <div class="event-desc">${event.desc}</div>
+            <div class="event-options">
+              ${event.options.map((option, index) => `
+                <button data-event="${pending.uid}" data-option="${index}">
+                  ${option.label}<br><span class="text-muted">${eventChanceText(option)}</span>
+                </button>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function renderTab(force = true) {
+      document.querySelectorAll("[data-tab]").forEach((button) => button.classList.toggle("active", button.dataset.tab === activeTab));
+      if (activeTab === "settings" && !force && $("tab-content")?.dataset.view === "settings") return;
+      if (activeTab === "events") renderEvents();
+      if (activeTab === "gear") renderGear();
+      if (activeTab === "inventory") renderInventory();
+      if (activeTab === "supplier") renderSupplier();
+      if (activeTab === "settings") renderSettings();
+    }
+
+    function renderGear() {
+      const slots = [
+        ["weapon", "武器"],
+        ["armor", "護具"],
+        ["module", "Diver 模組"],
+        ["charm", "信物"]
+      ];
+      const ownedEquipment = Object.keys(state.inventory).filter((id) => ITEMS[id]?.type === "equipment");
+      $("tab-content").innerHTML = `
+        <div class="note">目前外勤協定：${getProtocol().name}。${getProtocol().desc}</div>
+        ${slots.map(([slot, label]) => {
+          const id = state.equipment[slot];
+          const def = id ? ITEMS[id] : null;
+          return `<div class="item-row">
+            <div class="item-title"><span>${label}</span><span>${def ? def.name : "未裝備"}</span></div>
+            <div class="item-desc">${def ? itemSummary(def) : "此欄位空置。"}</div>
+          </div>`;
+        }).join("")}
+        <div class="section"></div>
+        ${ownedEquipment.length ? ownedEquipment.map((id) => renderItemRow(id, true)).join("") : `<div class="empty">沒有可裝備物品。</div>`}
+      `;
+    }
+
+    function renderInventory() {
+      const ids = Object.keys(state.inventory).sort((a, b) => (ITEMS[a]?.name || a).localeCompare(ITEMS[b]?.name || b, "zh-Hant"));
+      $("tab-content").innerHTML = ids.length ? ids.map((id) => renderItemRow(id, false)).join("") : `<div class="empty">背包是空的。</div>`;
+    }
+
+    function itemSummary(def) {
+      const parts = [];
+      if (def.damage) parts.push(`傷害 ${def.damage[0]}-${def.damage[1]}`);
+      if (def.defense) parts.push(`防禦 +${def.defense}`);
+      if (def.sync) parts.push(`同步 +${def.sync}`);
+      if (def.san) parts.push(`San +${def.san}`);
+      if (def.stats) {
+        for (const [key, value] of Object.entries(def.stats)) parts.push(`${STAT_META[key]?.short || key} ${value >= 0 ? "+" : ""}${value}`);
+      }
+      if (!parts.length && def.value) parts.push(`估值 ${def.value}`);
+      return `${parts.join(" / ")}${parts.length ? "。" : ""}${def.desc || ""}`;
+    }
+
+    function renderItemRow(id, gearMode) {
+      const def = ITEMS[id];
+      if (!def) return "";
+      const qty = state.inventory[id] || 0;
+      const equipped = Object.values(state.equipment).includes(id);
+      const canUse = def.type === "consumable";
+      const canEquip = def.type === "equipment";
+      return `
+        <div class="item-row">
+          <div class="item-title">
+            <span>${def.name} ${equipped ? `<span class="pill">裝備中</span>` : ""}</span>
+            <span>x${qty}</span>
+          </div>
+          <div class="item-desc">${itemSummary(def)}</div>
+          <div class="item-actions">
+            ${canUse ? `<button data-use="${id}">使用</button>` : ""}
+            ${canEquip ? `<button data-equip="${id}" ${equipped ? "disabled" : ""}>裝備</button>` : ""}
+            ${!gearMode ? `<button data-sell="${id}" ${equipped ? "disabled" : ""}>販售</button>` : ""}
+            ${canEquip ? `<button data-salvage="${id}" ${equipped ? "disabled" : ""}>拆解</button>` : ""}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSupplier() {
+      const inCity = state.currentMap === "astra_maris";
+      const restCost = Math.max(30, 60 + state.level * 8);
+      const forecastTarget = state.forecastTarget || "shield_edge";
+      const forecastText = state.weatherForecast.length
+        ? `${MAPS[forecastTarget]?.name || "外勤地圖"}：${state.weatherForecast.map((id) => WEATHER[id].name).join(" → ")}`
+        : "尚未購買準確預報";
+      const featuredQuote = SUPPLIER_QUOTES[(state.level + (state.resources.trust || 0)) % SUPPLIER_QUOTES.length];
+      const forecastOptions = Object.entries(MAPS)
+        .filter(([id, map]) => id !== "astra_maris" && state.level >= map.unlock)
+        .map(([id, map]) => `<option value="${id}" ${id === forecastTarget ? "selected" : ""}>${map.name}</option>`)
+        .join("");
+      const cityServices = `
+        <div class="item-row">
+          <div class="item-title"><span>亞斯特拉．馬里斯服務</span><span>${inCity ? "可使用" : "需回城"}</span></div>
+          <div class="item-desc">供應商本人在星海堡壘的工作台旁提供休息、補給、交易與天氣解析。</div>
+          <select id="forecast-target" ${!inCity ? "disabled" : ""}>${forecastOptions}</select>
+          <div class="item-actions">
+            <button data-city-rest="1" ${!inCity || state.credits < restCost ? "disabled" : ""}>休息校準 ${restCost}</button>
+            <button data-weather-forecast="1" ${!inCity || state.credits < 35 || (state.resources.shard || 0) < 1 ? "disabled" : ""}>查看準確預報 35 + 星律碎片1</button>
+          </div>
+          <div class="item-desc">預報：${forecastText}</div>
+        </div>`;
+      const supplies = SUPPLIES.map((supply) => {
+        const def = ITEMS[supply.id];
+        return `<div class="item-row">
+          <div class="item-title"><span>${def.name}</span><span>${supply.cost} 能源彈</span></div>
+          <div class="item-desc">${def.desc}</div>
+          <div class="item-actions"><button data-buy="${supply.id}" ${state.credits < supply.cost ? "disabled" : ""}>購買</button></div>
+        </div>`;
+      }).join("");
+      const upgrades = Object.entries(UPGRADES).map(([id, upgrade]) => {
+        const lv = state.upgrades[id] || 0;
+        const maxed = lv >= upgrade.max;
+        const cost = maxed ? {} : upgrade.cost(lv);
+        return `<div class="upgrade-row">
+          <div class="item-title"><span>${upgrade.name}</span><span>${lv}/${upgrade.max}</span></div>
+          <div class="item-desc">${upgrade.desc}</div>
+          <div class="item-desc">${maxed ? "已完成" : costText(cost)}</div>
+          <div class="item-actions"><button data-upgrade="${id}" ${maxed || !canPay(cost) ? "disabled" : ""}>整備</button></div>
+        </div>`;
+      }).join("");
+      $("tab-content").innerHTML = `
+        <div class="note">供應商是一名獨特角色，不是商店群體。他用自己的庫存、人脈與脾氣支援越盾者；信任越高，事件中越容易取得他的支援。</div>
+        <div class="note">${featuredQuote}</div>
+        ${cityServices}
+        <div class="panel-title" style="margin:0 0 8px"><strong>補給品</strong><span></span></div>
+        ${supplies}
+        <div class="panel-title" style="margin:10px 0 8px"><strong>裝備整備</strong><span></span></div>
+        ${upgrades}
+      `;
+    }
+
+    function costText(cost) {
+      const parts = [];
+      for (const [key, value] of Object.entries(cost)) {
+        if (key === "credits") parts.push(`能源彈 ${value}`);
+        else if (RESOURCE_META[key]) parts.push(`${RESOURCE_META[key].name} ${value}`);
+        else if (ITEMS[key]) parts.push(`${ITEMS[key].name} x${value}`);
+      }
+      return parts.join(" / ");
+    }
+
+    function renderSettings() {
+      const theme = { ...DEFAULT_THEME, ...(state.settings.theme || {}) };
+      const content = $("tab-content");
+      content.dataset.view = "settings";
+      content.innerHTML = `
+        <div class="item-row">
+          <div class="item-title"><span>自動補給</span><span>${state.settings.autoConsumables ? "ON" : "OFF"}</span></div>
+          <div class="item-actions"><button data-setting="autoConsumables">${state.settings.autoConsumables ? "關閉" : "開啟"}</button></div>
+        </div>
+        <div class="item-row">
+          <div class="item-title"><span>自動 San 穩定</span><span>${state.settings.autoSan ? "ON" : "OFF"}</span></div>
+          <div class="item-actions"><button data-setting="autoSan">${state.settings.autoSan ? "關閉" : "開啟"}</button></div>
+        </div>
+        <div class="item-row">
+          <div class="item-title"><span>自動儲存</span><span>${state.settings.autoSave ? "ON" : "OFF"}</span></div>
+          <div class="item-actions"><button data-setting="autoSave">${state.settings.autoSave ? "關閉" : "開啟"}</button></div>
+        </div>
+        <div class="item-row">
+          <div class="item-title"><span>介面色彩</span><span>即時套用</span></div>
+          <div class="color-grid">
+            <label class="color-control"><span>主色</span><input type="color" data-color="accent" value="${theme.accent}"></label>
+            <label class="color-control"><span>副色</span><input type="color" data-color="accent2" value="${theme.accent2}"></label>
+            <label class="color-control"><span>警示/資源</span><input type="color" data-color="gold" value="${theme.gold}"></label>
+            <label class="color-control"><span>背景</span><input type="color" data-color="bg" value="${theme.bg}"></label>
+            <label class="color-control"><span>面板</span><input type="color" data-color="panel" value="${theme.panel}"></label>
+          </div>
+          <div class="item-actions"><button data-theme-reset="1">重設色彩</button></div>
+        </div>
+        <div class="item-row">
+          <div class="item-title"><span>版本</span><span>${VERSION}</span></div>
+          <div class="item-desc">存檔鍵：${SAVE_KEY}</div>
+        </div>
+      `;
+    }
+
+    function renderLogList(id, entries) {
+      const el = $(id);
+      if (!el) return;
+      const shouldStayTop = el.scrollTop <= 16;
+      el.innerHTML = entries.slice().reverse().map((entry) => `<div class="log-line log-${entry.type}"><span class="time">${entry.time}</span>${esc(entry.text)}</div>`).join("");
+      if (shouldStayTop) el.scrollTop = 0;
+    }
+
+    function renderLogs() {
+      renderLogList("explore-log", state.log || []);
+      renderLogList("battle-log", state.battleLog || []);
+    }
+
+    function setupStrategySelect() {
+      $("strategy-select").innerHTML = Object.entries(STRATEGIES).map(([id, strategy]) => `<option value="${id}">${strategy.name}</option>`).join("");
+      $("strategy-select").addEventListener("change", (event) => {
+        state.settings.strategy = event.target.value;
+        addLog("system", `戰鬥策略切換為 ${STRATEGIES[state.settings.strategy].name}。`);
+        renderAll();
+      });
+    }
+
+    function bindEvents() {
+      $("btn-new").addEventListener("click", resetToCreation);
+      $("btn-save").addEventListener("click", () => saveGame(false));
+      $("btn-load").addEventListener("click", loadGame);
+      $("map-select").addEventListener("change", (event) => changeMap(event.target.value));
+      $("btn-pause").addEventListener("click", () => {
+        paused = !paused;
+        $("btn-pause").textContent = paused ? "繼續" : "暫停";
+        addLog("system", paused ? "外勤暫停。" : "外勤恢復。");
+      });
+      $("create-start").addEventListener("click", startNewGame);
+      $("create-load").addEventListener("click", loadGame);
+      document.body.addEventListener("click", (event) => {
+        const target = event.target.closest("button, .protocol");
+        if (!target) return;
+        if (target.dataset.createInc) adjustCreateStat(target.dataset.createInc, 1);
+        if (target.dataset.createDec) adjustCreateStat(target.dataset.createDec, -1);
+        if (target.dataset.protocol) {
+          createProtocol = target.dataset.protocol;
+          renderCreation();
+        }
+        if (target.dataset.map) changeMap(target.dataset.map);
+        if (target.dataset.tab) {
+          activeTab = target.dataset.tab;
+          renderTab();
+        }
+        if (target.dataset.event) resolveEvent(Number(target.dataset.event), Number(target.dataset.option));
+        if (target.dataset.use) useItem(target.dataset.use);
+        if (target.dataset.equip) equipItem(target.dataset.equip);
+        if (target.dataset.sell) sellItem(target.dataset.sell);
+        if (target.dataset.salvage) salvageItem(target.dataset.salvage);
+        if (target.dataset.buy) buySupply(target.dataset.buy);
+        if (target.dataset.upgrade) buyUpgrade(target.dataset.upgrade);
+        if (target.dataset.cityRest) restInAstraMaris();
+        if (target.dataset.weatherForecast) buyWeatherForecast();
+        if (target.dataset.setting) {
+          const key = target.dataset.setting;
+          state.settings[key] = !state.settings[key];
+          addLog("system", `${key} ${state.settings[key] ? "ON" : "OFF"}。`);
+          renderAll(true);
+        }
+        if (target.dataset.themeReset) resetTheme();
+        if (target.dataset.bonus) allocateBonus(target.dataset.bonus);
+      });
+      document.body.addEventListener("input", (event) => {
+        const target = event.target;
+        if (target && target.dataset && target.dataset.color) {
+          setThemeColor(target.dataset.color, target.value);
+        }
+      });
+    }
+
+    function adjustCreateStat(stat, delta) {
+      if (!STAT_META[stat]) return;
+      if (delta > 0 && createPoints <= 0) return;
+      if (delta < 0 && createStats[stat] <= 6) return;
+      createStats[stat] += delta;
+      createPoints -= delta;
+      renderCreation();
+    }
+
+    const canvas = $("scene");
+    const ctx = canvas.getContext("2d");
+    let lastW = 0;
+    let lastH = 0;
+    const particles = Array.from({ length: 90 }, () => ({ x: Math.random(), y: Math.random(), z: Math.random(), s: Math.random() }));
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      const w = Math.max(1, Math.floor(rect.width * ratio));
+      const h = Math.max(1, Math.floor(rect.height * ratio));
+      if (w !== lastW || h !== lastH) {
+        canvas.width = w;
+        canvas.height = h;
+        lastW = w;
+        lastH = h;
+      }
+      return { w, h, ratio };
+    }
+
+    function drawScene(time) {
+      const { w, h, ratio } = resizeCanvas();
+      ctx.save();
+      ctx.scale(ratio, ratio);
+      const width = w / ratio;
+      const height = h / ratio;
+      ctx.clearRect(0, 0, width, height);
+      const weather = currentWeather();
+      const map = currentMap();
+      const badWeather = weather.id === "tidal_noise" || weather.id === "stellody_storm" || weather.id === "industrial_rain";
+      const uneasyWeather = badWeather || weather.id === "silver_grief";
+      const jitter = badWeather ? Math.sin(time / 63) * 2.6 : 0;
+      const grd = ctx.createLinearGradient(0, 0, width, height);
+      grd.addColorStop(0, badWeather ? "#120909" : "#050806");
+      grd.addColorStop(0.54, badWeather ? "#161210" : "#0b1110");
+      grd.addColorStop(1, "#030403");
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, 0, width, height);
+
+      const cx = width * 0.5 + jitter;
+      const cy = height * 0.56 + (badWeather ? Math.cos(time / 77) * 2 : 0);
+      const phase = (time / (badWeather ? 4300 : 5600)) % 1;
+      const topBand = 38;
+
+      ctx.strokeStyle = "rgba(116, 228, 196, 0.045)";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < width; x += 18) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < height; y += 18) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+      }
+
+      const forecast = [state.weather, ...(state.weatherForecast || [])].slice(0, 6);
+      ctx.fillStyle = "rgba(0, 0, 0, 0.52)";
+      ctx.fillRect(8, 8, width - 16, topBand);
+      ctx.strokeStyle = "rgba(234, 240, 231, 0.14)";
+      ctx.strokeRect(8, 8, width - 16, topBand);
+      ctx.beginPath();
+      forecast.forEach((id, index) => {
+        const def = WEATHER[id] || WEATHER.stable;
+        const start = 12 + index * ((width - 24) / Math.max(1, forecast.length));
+        const segW = (width - 24) / Math.max(1, forecast.length);
+        ctx.fillStyle = hexToRgba(def.color, index === 0 ? 0.28 : 0.16);
+        ctx.fillRect(start, 11, segW - 3, topBand - 6);
+        for (let x = 0; x < segW - 4; x += 5) {
+          const px = start + x;
+          const py = 29 + Math.sin((x + time / 38 + index * 15) / 8) * (index === 0 ? 8 : 5);
+          if (x === 0 && index === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+      });
+      ctx.strokeStyle = hexToRgba(weather.color, badWeather ? 0.9 : 0.62);
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.30)";
+      ctx.fillRect(0, topBand + 8, width, height - topBand - 8);
+
+      const corridorTop = topBand + 24;
+      const frames = 7;
+      const rects = [];
+      for (let i = -1; i <= frames; i += 1) {
+        const t = (i + phase) / frames;
+        if (t <= 0.02 || t >= 1.02) continue;
+        const near = clamp(t, 0.02, 1);
+        const eased = Math.pow(near, 1.36);
+        const halfW = 18 + eased * width * 0.55;
+        const halfH = 12 + Math.pow(near, 1.22) * height * 0.42;
+        rects.push({
+          x1: cx - halfW,
+          y1: cy - halfH,
+          x2: cx + halfW,
+          y2: cy + halfH,
+          t: near
+        });
+      }
+
+      ctx.fillStyle = "rgba(0, 0, 0, 0.24)";
+      ctx.beginPath();
+      ctx.moveTo(16, height - 20);
+      ctx.lineTo(cx - 20, cy + 8);
+      ctx.lineTo(cx + 20, cy + 8);
+      ctx.lineTo(width - 16, height - 20);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = hexToRgba(weather.color, badWeather ? 0.44 : 0.28);
+      ctx.lineWidth = 1.2;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(14, corridorTop);
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(width - 14, corridorTop);
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(16, height - 22);
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(width - 16, height - 22);
+      ctx.stroke();
+
+      for (let i = rects.length - 1; i >= 0; i -= 1) {
+        const r = rects[i];
+        const y1 = Math.max(corridorTop, r.y1);
+        const alpha = 0.12 + r.t * (badWeather ? 0.42 : 0.28);
+        ctx.strokeStyle = hexToRgba(weather.color, alpha);
+        ctx.lineWidth = r.t > 0.68 ? 2 : 1;
+        ctx.strokeRect(r.x1, y1, r.x2 - r.x1, r.y2 - y1);
+      }
+
+      ctx.strokeStyle = hexToRgba(weather.color, badWeather ? 0.54 : 0.34);
+      ctx.lineWidth = 1.2;
+      for (let i = 0; i < rects.length - 1; i += 1) {
+        const a = rects[i];
+        const b = rects[i + 1];
+        ctx.beginPath();
+        ctx.moveTo(a.x1, Math.max(corridorTop, a.y1));
+        ctx.lineTo(b.x1, Math.max(corridorTop, b.y1));
+        ctx.moveTo(a.x2, Math.max(corridorTop, a.y1));
+        ctx.lineTo(b.x2, Math.max(corridorTop, b.y1));
+        ctx.moveTo(a.x1, a.y2);
+        ctx.lineTo(b.x1, b.y2);
+        ctx.moveTo(a.x2, a.y2);
+        ctx.lineTo(b.x2, b.y2);
+        ctx.stroke();
+      }
+
+      for (let i = 1; i < rects.length - 2; i += 3) {
+        const r = rects[i];
+        const side = (i + state.currentMap.length) % 2 === 0 ? -1 : 1;
+        const wallX = side < 0 ? r.x1 : r.x2;
+        const innerY = r.y1 + (r.y2 - r.y1) * 0.5;
+        const outerX = wallX + side * width * 0.16;
+        ctx.strokeStyle = hexToRgba(weather.color, badWeather ? 0.28 : 0.18);
+        ctx.beginPath();
+        ctx.moveTo(wallX, innerY - 18);
+        ctx.lineTo(outerX, innerY - 34);
+        ctx.moveTo(wallX, innerY + 18);
+        ctx.lineTo(outerX, innerY + 34);
+        ctx.stroke();
+      }
+
+      ctx.strokeStyle = hexToRgba(weather.color, badWeather ? 0.62 : 0.38);
+      ctx.lineWidth = 2;
+      ctx.strokeRect(8, 8, width - 16, height - 16);
+      ctx.strokeStyle = "rgba(234, 240, 231, 0.14)";
+      ctx.strokeRect(14, 14, width - 28, height - 28);
+
+      ctx.fillStyle = "rgba(234, 240, 231, 0.72)";
+      ctx.font = "700 12px 'Noto Serif TC', serif";
+      ctx.fillText("WEATHER WAVE", 16, 24);
+      ctx.textAlign = "right";
+      ctx.fillStyle = weather.color;
+      ctx.fillText(weather.name, width - 16, 24);
+      ctx.fillStyle = "rgba(152, 167, 158, 0.84)";
+      ctx.fillText(`${state.weatherRemaining}s`, width - 16, 42);
+      ctx.textAlign = "left";
+      ctx.fillStyle = "rgba(152, 167, 158, 0.72)";
+      ctx.fillText(map.name, 16, height - 18);
+
+      for (const p of particles) {
+        const speed = badWeather ? 0.0024 : weather.id === "silence" ? 0.00018 : 0.00062;
+        p.y += speed * (0.4 + p.z);
+        p.x += Math.sin(time / 1200 + p.z * 8) * (badWeather ? 0.0018 : 0.00042);
+        if (p.y > 1) p.y = 0;
+        if (p.x > 1) p.x = 0;
+        if (p.x < 0) p.x = 1;
+        ctx.fillStyle = hexToRgba(weather.color, weather.id === "silence" ? 0.16 : badWeather ? 0.55 + p.z * 0.38 : 0.32 + p.z * 0.28);
+        const size = weather.id === "crystal_snow" ? 2.2 + p.z * 2.4 : badWeather ? 2.4 + p.z * 5.2 : 1 + p.z * 2.2;
+        if (badWeather) {
+          ctx.fillRect(p.x * width, p.y * height, size * 4, size);
+        } else {
+          ctx.fillRect(p.x * width, p.y * height, size, size);
+        }
+      }
+
+      if (uneasyWeather) {
+        const fog = badWeather ? 0.30 : 0.14;
+        ctx.fillStyle = hexToRgba(weather.color, fog);
+        ctx.fillRect(0, 0, width, height);
+        for (let i = 0; i < (badWeather ? 34 : 12); i += 1) {
+          const y = (time / (18 + i) + i * 29) % height;
+          const x = (Math.sin(time / (91 + i)) * 0.5 + 0.5) * width;
+          ctx.fillStyle = i % 3 === 0 ? "rgba(0,0,0,0.34)" : hexToRgba(weather.color, 0.18);
+          ctx.fillRect(x - width * 0.45, y, width * (badWeather ? 0.9 : 0.42), badWeather ? 3 : 1);
+        }
+        if (badWeather) {
+          for (let i = 0; i < 26; i += 1) {
+            const x = ((Math.sin(time / (37 + i) + i * 4.7) + 1) * 0.5) * width;
+            const y = ((Math.cos(time / (49 + i) + i * 2.9) + 1) * 0.5) * height;
+            const smearW = 18 + (i % 5) * 15;
+            const smearH = 4 + (i % 4) * 5;
+            ctx.fillStyle = i % 2 ? "rgba(5, 7, 6, 0.36)" : hexToRgba(weather.color, 0.16);
+            ctx.fillRect(x - smearW * 0.5, y - smearH * 0.5, smearW, smearH);
+          }
+        }
+      }
+
+      if (state.enemy) {
+        const enemy = state.enemy;
+        const ex = cx + Math.sin(time / 520) * (badWeather ? 8 : 3);
+        const ey = cy + Math.cos(time / 720) * (badWeather ? 5 : 2);
+        const radius = 34 + Math.sin(time / 360) * 3;
+        ctx.strokeStyle = hexToRgba(enemy.color, 0.88);
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(ex, ey, radius, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(ex - radius * 0.72, ey);
+        ctx.lineTo(ex + radius * 0.72, ey);
+        ctx.moveTo(ex, ey - radius * 0.72);
+        ctx.lineTo(ex, ey + radius * 0.72);
+        ctx.stroke();
+        ctx.fillStyle = hexToRgba(enemy.color, 0.18);
+        ctx.fillRect(ex - radius * 0.55, ey - radius * 0.55, radius * 1.1, radius * 1.1);
+        ctx.fillStyle = "#eaf0e7";
+        ctx.font = "900 13px 'Noto Serif TC', serif";
+        ctx.textAlign = "center";
+        ctx.fillText("SEARCHING", cx, cy + 5);
+        ctx.fillText(enemy.type, ex, ey + radius + 20);
+        ctx.textAlign = "left";
+      } else {
+        ctx.strokeStyle = "rgba(116, 228, 196, 0.45)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 32, -Math.PI / 2, -Math.PI / 2 + (state.explore % 1) * Math.PI * 2);
+        ctx.stroke();
+        ctx.fillStyle = "rgba(234, 240, 231, 0.64)";
+        ctx.font = "900 12px 'Noto Serif TC', serif";
+        ctx.textAlign = "center";
+        ctx.fillText("SEARCHING", cx, cy + 4);
+        ctx.textAlign = "left";
+      }
+
+      ctx.restore();
+      requestAnimationFrame(drawScene);
+    }
+
+    function hexToRgba(hex, alpha) {
+      const clean = hex.replace("#", "");
+      const value = parseInt(clean, 16);
+      const r = (value >> 16) & 255;
+      const g = (value >> 8) & 255;
+      const b = value & 255;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
+    function init() {
+      setupStrategySelect();
+      bindEvents();
+      renderCreation();
+      renderAll();
+      requestAnimationFrame(drawScene);
+      if (localStorage.getItem(SAVE_KEY)) {
+        $("create-load").disabled = false;
+      } else {
+        $("create-load").disabled = true;
+      }
+    }
+
+    window.stellodyGame = {
+      get state() { return state; },
+      saveGame,
+      loadGame,
+      changeMap,
+      useItem,
+      VERSION
+    };
+
+    init();
+  })();
+  </script>
+</body>
+</html>
